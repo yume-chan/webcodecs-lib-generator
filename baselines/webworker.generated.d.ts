@@ -138,6 +138,7 @@ interface WebKitErrorCallback {
 interface WebKitFileCallback {
     (file: File): void;
 }
+
 interface AudioBuffer {
     readonly duration: number;
     readonly length: number;
@@ -152,6 +153,7 @@ declare var AudioBuffer: {
     prototype: AudioBuffer;
     new(): AudioBuffer;
 }
+
 interface Blob {
     readonly size: number;
     readonly type: string;
@@ -164,6 +166,7 @@ declare var Blob: {
     prototype: Blob;
     new (blobParts?: any[], options?: BlobPropertyBag): Blob;
 }
+
 interface Cache {
     add(request: RequestInfo): Promise<void>;
     addAll(requests: RequestInfo[]): Promise<void>;
@@ -178,6 +181,7 @@ declare var Cache: {
     prototype: Cache;
     new(): Cache;
 }
+
 interface CacheStorage {
     delete(cacheName: string): Promise<boolean>;
     has(cacheName: string): Promise<boolean>;
@@ -190,6 +194,7 @@ declare var CacheStorage: {
     prototype: CacheStorage;
     new(): CacheStorage;
 }
+
 interface CloseEvent<T extends EventTarget = EventTarget> extends Event<T> {
     readonly code: number;
     readonly reason: string;
@@ -201,6 +206,7 @@ declare var CloseEvent: {
     prototype: CloseEvent;
     new(typeArg: string, eventInitDict?: CloseEventInit): CloseEvent;
 }
+
 interface Console {
     assert(test?: boolean, message?: string, ...optionalParams: any[]): void;
     clear(): void;
@@ -230,6 +236,7 @@ declare var Console: {
     prototype: Console;
     new(): Console;
 }
+
 interface Coordinates {
     readonly accuracy: number;
     readonly altitude: number | null;
@@ -244,6 +251,7 @@ declare var Coordinates: {
     prototype: Coordinates;
     new(): Coordinates;
 }
+
 interface CryptoKey {
     readonly algorithm: KeyAlgorithm;
     readonly extractable: boolean;
@@ -255,6 +263,7 @@ declare var CryptoKey: {
     prototype: CryptoKey;
     new(): CryptoKey;
 }
+
 interface DOMError {
     readonly name: string;
     toString(): string;
@@ -264,6 +273,7 @@ declare var DOMError: {
     prototype: DOMError;
     new(): DOMError;
 }
+
 interface DOMException {
     readonly code: number;
     readonly message: string;
@@ -329,6 +339,7 @@ declare var DOMException: {
     readonly VALIDATION_ERR: number;
     readonly WRONG_DOCUMENT_ERR: number;
 }
+
 interface DOMStringList {
     readonly length: number;
     contains(str: string): boolean;
@@ -340,6 +351,7 @@ declare var DOMStringList: {
     prototype: DOMStringList;
     new(): DOMStringList;
 }
+
 interface ErrorEvent<T extends EventTarget = EventTarget> extends Event<T> {
     readonly colno: number;
     readonly error: any;
@@ -353,6 +365,7 @@ declare var ErrorEvent: {
     prototype: ErrorEvent;
     new(type: string, errorEventInitDict?: ErrorEventInit): ErrorEvent;
 }
+
 interface Event<T extends EventTarget = EventTarget> {
     readonly bubbles: boolean;
     cancelBubble: boolean;
@@ -384,6 +397,7 @@ declare var Event: {
     readonly BUBBLING_PHASE: number;
     readonly CAPTURING_PHASE: number;
 }
+
 interface EventTarget {
     addEventListener(type: string, listener?: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
     dispatchEvent(evt: Event): boolean;
@@ -394,6 +408,7 @@ declare var EventTarget: {
     prototype: EventTarget;
     new(): EventTarget;
 }
+
 interface File extends Blob {
     readonly lastModifiedDate: any;
     readonly name: string;
@@ -404,6 +419,7 @@ declare var File: {
     prototype: File;
     new (parts: (ArrayBuffer | ArrayBufferView | Blob | string)[], filename: string, properties?: FilePropertyBag): File;
 }
+
 interface FileList {
     readonly length: number;
     item(index: number): File;
@@ -414,6 +430,7 @@ declare var FileList: {
     prototype: FileList;
     new(): FileList;
 }
+
 interface FileReader extends EventTarget, MSBaseReader<FileReader> {
     readonly error: DOMError;
     readAsArrayBuffer(blob: Blob): void;
@@ -428,6 +445,7 @@ declare var FileReader: {
     prototype: FileReader;
     new(): FileReader;
 }
+
 interface Headers {
     append(name: string, value: string): void;
     delete(name: string): void;
@@ -441,6 +459,7 @@ declare var Headers: {
     prototype: Headers;
     new(init?: any): Headers;
 }
+
 interface IDBCursor {
     readonly direction: string;
     key: IDBKeyRange | IDBValidKey;
@@ -464,6 +483,7 @@ declare var IDBCursor: {
     readonly PREV: string;
     readonly PREV_NO_DUPLICATE: string;
 }
+
 interface IDBCursorWithValue extends IDBCursor {
     readonly value: any;
 }
@@ -477,6 +497,7 @@ interface IDBDatabaseEventMap {
     "abort": Event;
     "error": Event;
 }
+
 interface IDBDatabase extends EventTarget {
     readonly name: string;
     readonly objectStoreNames: DOMStringList;
@@ -497,6 +518,7 @@ declare var IDBDatabase: {
     prototype: IDBDatabase;
     new(): IDBDatabase;
 }
+
 interface IDBFactory {
     cmp(first: any, second: any): number;
     deleteDatabase(name: string): IDBOpenDBRequest;
@@ -507,6 +529,7 @@ declare var IDBFactory: {
     prototype: IDBFactory;
     new(): IDBFactory;
 }
+
 interface IDBIndex {
     keyPath: string | string[];
     readonly name: string;
@@ -524,6 +547,7 @@ declare var IDBIndex: {
     prototype: IDBIndex;
     new(): IDBIndex;
 }
+
 interface IDBKeyRange {
     readonly lower: any;
     readonly lowerOpen: boolean;
@@ -539,6 +563,7 @@ declare var IDBKeyRange: {
     only(value: any): IDBKeyRange;
     upperBound(upper: any, open?: boolean): IDBKeyRange;
 }
+
 interface IDBObjectStore {
     readonly indexNames: DOMStringList;
     keyPath: string | string[];
@@ -566,6 +591,7 @@ interface IDBOpenDBRequestEventMap extends IDBRequestEventMap {
     "blocked": Event;
     "upgradeneeded": IDBVersionChangeEvent;
 }
+
 interface IDBOpenDBRequest extends IDBRequest {
     onblocked: (this: IDBOpenDBRequest, ev: Event<this>) => any;
     onupgradeneeded: (this: IDBOpenDBRequest, ev: IDBVersionChangeEvent<this>) => any;
@@ -582,6 +608,7 @@ interface IDBRequestEventMap {
     "error": Event;
     "success": Event;
 }
+
 interface IDBRequest extends EventTarget {
     readonly error: DOMError;
     onerror: (this: IDBRequest, ev: Event<this>) => any;
@@ -604,6 +631,7 @@ interface IDBTransactionEventMap {
     "complete": Event;
     "error": Event;
 }
+
 interface IDBTransaction extends EventTarget {
     readonly db: IDBDatabase;
     readonly error: DOMError;
@@ -627,6 +655,7 @@ declare var IDBTransaction: {
     readonly READ_WRITE: string;
     readonly VERSION_CHANGE: string;
 }
+
 interface IDBVersionChangeEvent<T extends EventTarget = EventTarget> extends Event<T> {
     readonly newVersion: number | null;
     readonly oldVersion: number;
@@ -636,6 +665,7 @@ declare var IDBVersionChangeEvent: {
     prototype: IDBVersionChangeEvent;
     new(): IDBVersionChangeEvent;
 }
+
 interface ImageData {
     data: Uint8ClampedArray;
     readonly height: number;
@@ -647,6 +677,7 @@ declare var ImageData: {
     new(width: number, height: number): ImageData;
     new(array: Uint8ClampedArray, width: number, height: number): ImageData;
 }
+
 interface MessageChannel {
     readonly port1: MessagePort;
     readonly port2: MessagePort;
@@ -656,6 +687,7 @@ declare var MessageChannel: {
     prototype: MessageChannel;
     new(): MessageChannel;
 }
+
 interface MessageEvent<T extends EventTarget = EventTarget> extends Event<T> {
     readonly data: any;
     readonly origin: string;
@@ -672,6 +704,7 @@ declare var MessageEvent: {
 interface MessagePortEventMap {
     "message": MessageEvent;
 }
+
 interface MessagePort extends EventTarget {
     onmessage: (this: MessagePort, ev: MessageEvent<this>) => any;
     close(): void;
@@ -692,6 +725,7 @@ interface NotificationEventMap {
     "error": Event;
     "show": Event;
 }
+
 interface Notification extends EventTarget {
     readonly body: string;
     readonly dir: string;
@@ -714,6 +748,7 @@ declare var Notification: {
     new(title: string, options?: NotificationOptions): Notification;
     requestPermission(callback?: NotificationPermissionCallback): Promise<string>;
 }
+
 interface Performance {
     readonly navigation: PerformanceNavigation;
     readonly timing: PerformanceTiming;
@@ -736,6 +771,7 @@ declare var Performance: {
     prototype: Performance;
     new(): Performance;
 }
+
 interface PerformanceNavigation {
     readonly redirectCount: number;
     readonly type: number;
@@ -754,6 +790,7 @@ declare var PerformanceNavigation: {
     readonly TYPE_RELOAD: number;
     readonly TYPE_RESERVED: number;
 }
+
 interface PerformanceTiming {
     readonly connectEnd: number;
     readonly connectStart: number;
@@ -784,6 +821,7 @@ declare var PerformanceTiming: {
     prototype: PerformanceTiming;
     new(): PerformanceTiming;
 }
+
 interface Position {
     readonly coords: Coordinates;
     readonly timestamp: number;
@@ -793,6 +831,7 @@ declare var Position: {
     prototype: Position;
     new(): Position;
 }
+
 interface PositionError {
     readonly code: number;
     readonly message: string;
@@ -809,6 +848,7 @@ declare var PositionError: {
     readonly POSITION_UNAVAILABLE: number;
     readonly TIMEOUT: number;
 }
+
 interface ProgressEvent<T extends EventTarget = EventTarget> extends Event<T> {
     readonly lengthComputable: boolean;
     readonly loaded: number;
@@ -820,6 +860,7 @@ declare var ProgressEvent: {
     prototype: ProgressEvent;
     new(type: string, eventInitDict?: ProgressEventInit): ProgressEvent;
 }
+
 interface PushManager {
     getSubscription(): Promise<PushSubscription>;
     permissionState(options?: PushSubscriptionOptionsInit): Promise<string>;
@@ -830,6 +871,7 @@ declare var PushManager: {
     prototype: PushManager;
     new(): PushManager;
 }
+
 interface PushSubscription {
     readonly endpoint: USVString;
     readonly options: PushSubscriptionOptions;
@@ -842,6 +884,7 @@ declare var PushSubscription: {
     prototype: PushSubscription;
     new(): PushSubscription;
 }
+
 interface PushSubscriptionOptions {
     readonly applicationServerKey: ArrayBuffer | null;
     readonly userVisibleOnly: boolean;
@@ -851,6 +894,7 @@ declare var PushSubscriptionOptions: {
     prototype: PushSubscriptionOptions;
     new(): PushSubscriptionOptions;
 }
+
 interface ReadableStream {
     readonly locked: boolean;
     cancel(): Promise<void>;
@@ -861,6 +905,7 @@ declare var ReadableStream: {
     prototype: ReadableStream;
     new(): ReadableStream;
 }
+
 interface ReadableStreamReader {
     cancel(): Promise<void>;
     read(): Promise<any>;
@@ -871,6 +916,7 @@ declare var ReadableStreamReader: {
     prototype: ReadableStreamReader;
     new(): ReadableStreamReader;
 }
+
 interface Request extends Object, Body {
     readonly cache: string;
     readonly credentials: string;
@@ -892,6 +938,7 @@ declare var Request: {
     prototype: Request;
     new(input: Request | string, init?: RequestInit): Request;
 }
+
 interface Response extends Object, Body {
     readonly body: ReadableStream | null;
     readonly headers: Headers;
@@ -911,6 +958,7 @@ declare var Response: {
 interface ServiceWorkerEventMap extends AbstractWorkerEventMap {
     "statechange": Event;
 }
+
 interface ServiceWorker extends EventTarget, AbstractWorker<ServiceWorker> {
     onstatechange: (this: ServiceWorker, ev: Event<this>) => any;
     readonly scriptURL: USVString;
@@ -928,6 +976,7 @@ declare var ServiceWorker: {
 interface ServiceWorkerRegistrationEventMap {
     "updatefound": Event;
 }
+
 interface ServiceWorkerRegistration extends EventTarget {
     readonly active: ServiceWorker | null;
     readonly installing: ServiceWorker | null;
@@ -948,6 +997,7 @@ declare var ServiceWorkerRegistration: {
     prototype: ServiceWorkerRegistration;
     new(): ServiceWorkerRegistration;
 }
+
 interface SyncManager {
     getTags(): any;
     register(tag: string): Promise<void>;
@@ -957,6 +1007,7 @@ declare var SyncManager: {
     prototype: SyncManager;
     new(): SyncManager;
 }
+
 interface WebKitDirectoryEntry extends WebKitEntry {
     createReader(): WebKitDirectoryReader;
 }
@@ -965,6 +1016,7 @@ declare var WebKitDirectoryEntry: {
     prototype: WebKitDirectoryEntry;
     new(): WebKitDirectoryEntry;
 }
+
 interface WebKitDirectoryReader {
     readEntries(successCallback: WebKitEntriesCallback, errorCallback?: WebKitErrorCallback): void;
 }
@@ -973,6 +1025,7 @@ declare var WebKitDirectoryReader: {
     prototype: WebKitDirectoryReader;
     new(): WebKitDirectoryReader;
 }
+
 interface WebKitEntry {
     readonly filesystem: WebKitFileSystem;
     readonly fullPath: string;
@@ -985,6 +1038,7 @@ declare var WebKitEntry: {
     prototype: WebKitEntry;
     new(): WebKitEntry;
 }
+
 interface WebKitFileSystem {
     readonly name: string;
     readonly root: WebKitDirectoryEntry;
@@ -1001,6 +1055,7 @@ interface WebSocketEventMap {
     "message": MessageEvent;
     "open": Event;
 }
+
 interface WebSocket extends EventTarget {
     binaryType: string;
     readonly bufferedAmount: number;
@@ -1034,6 +1089,7 @@ declare var WebSocket: {
 interface WorkerEventMap extends AbstractWorkerEventMap {
     "message": MessageEvent;
 }
+
 interface Worker extends EventTarget, AbstractWorker<Worker> {
     onmessage: (this: Worker, ev: MessageEvent<this>) => any;
     postMessage(message: any, transfer?: any[]): void;
@@ -1050,6 +1106,7 @@ declare var Worker: {
 interface XMLHttpRequestEventMap extends XMLHttpRequestEventTargetEventMap {
     "readystatechange": Event;
 }
+
 interface XMLHttpRequest extends EventTarget, XMLHttpRequestEventTarget<XMLHttpRequest> {
     onreadystatechange: (this: XMLHttpRequest, ev: Event<this>) => any;
     readonly readyState: number;
@@ -1091,6 +1148,7 @@ declare var XMLHttpRequest: {
     readonly OPENED: number;
     readonly UNSENT: number;
 }
+
 interface XMLHttpRequestUpload extends EventTarget, XMLHttpRequestEventTarget<XMLHttpRequestUpload> {
     addEventListener<K extends keyof XMLHttpRequestEventTargetEventMap>(type: K, listener: (this: XMLHttpRequestUpload, ev: XMLHttpRequestEventTargetEventMap[K]) => any, useCapture?: boolean): void;
     addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
@@ -1104,9 +1162,11 @@ declare var XMLHttpRequestUpload: {
 interface AbstractWorkerEventMap {
     "error": ErrorEvent;
 }
+
 interface AbstractWorker<T extends EventTarget = EventTarget> {
     onerror: (this: AbstractWorker, ev: ErrorEvent<T>) => any;
 }
+
 interface Body {
     readonly bodyUsed: boolean;
     arrayBuffer(): Promise<ArrayBuffer>;
@@ -1114,6 +1174,7 @@ interface Body {
     json(): Promise<any>;
     text(): Promise<string>;
 }
+
 interface GlobalFetch {
     fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
 }
@@ -1126,6 +1187,7 @@ interface MSBaseReaderEventMap {
     "loadstart": Event;
     "progress": ProgressEvent;
 }
+
 interface MSBaseReader<T extends EventTarget = EventTarget> {
     onabort: (this: MSBaseReader, ev: Event<T>) => any;
     onerror: (this: MSBaseReader, ev: ErrorEvent<T>) => any;
@@ -1140,12 +1202,15 @@ interface MSBaseReader<T extends EventTarget = EventTarget> {
     readonly EMPTY: number;
     readonly LOADING: number;
 }
+
 interface NavigatorBeacon {
     sendBeacon(url: USVString, data?: BodyInit): boolean;
 }
+
 interface NavigatorConcurrentHardware {
     readonly hardwareConcurrency: number;
 }
+
 interface NavigatorID {
     readonly appCodeName: string;
     readonly appName: string;
@@ -1157,13 +1222,16 @@ interface NavigatorID {
     readonly vendor: string;
     readonly vendorSub: string;
 }
+
 interface NavigatorOnLine {
     readonly onLine: boolean;
 }
+
 interface WindowBase64 {
     atob(encodedString: string): string;
     btoa(rawString: string): string;
 }
+
 interface WindowConsole {
     readonly console: Console;
 }
@@ -1177,6 +1245,7 @@ interface XMLHttpRequestEventTargetEventMap {
     "progress": ProgressEvent;
     "timeout": ProgressEvent;
 }
+
 interface XMLHttpRequestEventTarget<T extends EventTarget = EventTarget> {
     onabort: (this: XMLHttpRequestEventTarget, ev: Event<T>) => any;
     onerror: (this: XMLHttpRequestEventTarget, ev: ErrorEvent<T>) => any;
@@ -1186,6 +1255,7 @@ interface XMLHttpRequestEventTarget<T extends EventTarget = EventTarget> {
     onprogress: (this: XMLHttpRequestEventTarget, ev: ProgressEvent<T>) => any;
     ontimeout: (this: XMLHttpRequestEventTarget, ev: ProgressEvent<T>) => any;
 }
+
 interface Client {
     readonly frameType: string;
     readonly id: string;
@@ -1197,6 +1267,7 @@ declare var Client: {
     prototype: Client;
     new(): Client;
 }
+
 interface Clients {
     claim(): Promise<void>;
     get(id: string): Promise<any>;
@@ -1212,6 +1283,7 @@ declare var Clients: {
 interface DedicatedWorkerGlobalScopeEventMap extends WorkerGlobalScopeEventMap {
     "message": MessageEvent;
 }
+
 interface DedicatedWorkerGlobalScope extends WorkerGlobalScope {
     onmessage: (this: DedicatedWorkerGlobalScope, ev: MessageEvent<this>) => any;
     close(): void;
@@ -1224,6 +1296,7 @@ declare var DedicatedWorkerGlobalScope: {
     prototype: DedicatedWorkerGlobalScope;
     new(): DedicatedWorkerGlobalScope;
 }
+
 interface ExtendableEvent<T extends EventTarget = EventTarget> extends Event<T> {
     waitUntil(f: Promise<any>): void;
 }
@@ -1232,6 +1305,7 @@ declare var ExtendableEvent: {
     prototype: ExtendableEvent;
     new(type: string, eventInitDict?: ExtendableEventInit): ExtendableEvent;
 }
+
 interface ExtendableMessageEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
     readonly data: any;
     readonly lastEventId: string;
@@ -1244,6 +1318,7 @@ declare var ExtendableMessageEvent: {
     prototype: ExtendableMessageEvent;
     new(type: string, eventInitDict?: ExtendableMessageEventInit): ExtendableMessageEvent;
 }
+
 interface FetchEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
     readonly clientId: string | null;
     readonly isReload: boolean;
@@ -1255,6 +1330,7 @@ declare var FetchEvent: {
     prototype: FetchEvent;
     new(type: string, eventInitDict: FetchEventInit): FetchEvent;
 }
+
 interface FileReaderSync {
     readAsArrayBuffer(blob: Blob): any;
     readAsBinaryString(blob: Blob): void;
@@ -1266,6 +1342,7 @@ declare var FileReaderSync: {
     prototype: FileReaderSync;
     new(): FileReaderSync;
 }
+
 interface NotificationEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
     readonly action: string;
     readonly notification: Notification;
@@ -1275,6 +1352,7 @@ declare var NotificationEvent: {
     prototype: NotificationEvent;
     new(type: string, eventInitDict: NotificationEventInit): NotificationEvent;
 }
+
 interface PushEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
     readonly data: PushMessageData | null;
 }
@@ -1283,6 +1361,7 @@ declare var PushEvent: {
     prototype: PushEvent;
     new(type: string, eventInitDict?: PushEventInit): PushEvent;
 }
+
 interface PushMessageData {
     arrayBuffer(): ArrayBuffer;
     blob(): Blob;
@@ -1306,6 +1385,7 @@ interface ServiceWorkerGlobalScopeEventMap extends WorkerGlobalScopeEventMap {
     "pushsubscriptionchange": ExtendableEvent;
     "sync": SyncEvent;
 }
+
 interface ServiceWorkerGlobalScope extends WorkerGlobalScope {
     readonly clients: Clients;
     onactivate: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<this>) => any;
@@ -1327,6 +1407,7 @@ declare var ServiceWorkerGlobalScope: {
     prototype: ServiceWorkerGlobalScope;
     new(): ServiceWorkerGlobalScope;
 }
+
 interface SyncEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
     readonly lastChance: boolean;
     readonly tag: string;
@@ -1336,6 +1417,7 @@ declare var SyncEvent: {
     prototype: SyncEvent;
     new(type: string, init: SyncEventInit): SyncEvent;
 }
+
 interface WindowClient extends Client {
     readonly focused: boolean;
     readonly visibilityState: string;
@@ -1351,6 +1433,7 @@ declare var WindowClient: {
 interface WorkerGlobalScopeEventMap {
     "error": ErrorEvent;
 }
+
 interface WorkerGlobalScope extends EventTarget, WorkerUtils, WindowConsole, GlobalFetch {
     readonly caches: CacheStorage;
     readonly isSecureContext: boolean;
@@ -1367,6 +1450,7 @@ declare var WorkerGlobalScope: {
     prototype: WorkerGlobalScope;
     new(): WorkerGlobalScope;
 }
+
 interface WorkerLocation {
     readonly hash: string;
     readonly host: string;
@@ -1384,6 +1468,7 @@ declare var WorkerLocation: {
     prototype: WorkerLocation;
     new(): WorkerLocation;
 }
+
 interface WorkerNavigator extends Object, NavigatorID, NavigatorOnLine, NavigatorBeacon, NavigatorConcurrentHardware {
     readonly hardwareConcurrency: number;
 }
@@ -1392,6 +1477,7 @@ declare var WorkerNavigator: {
     prototype: WorkerNavigator;
     new(): WorkerNavigator;
 }
+
 interface WorkerUtils extends Object, WindowBase64 {
     readonly indexedDB: IDBFactory;
     readonly msIndexedDB: IDBFactory;

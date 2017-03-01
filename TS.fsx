@@ -1163,9 +1163,9 @@ module Emit =
         let baseTypeName = generateBaseTypeNameIfNecessary i.Name
         if baseTypeName <> i.Name then
             Pt.PrintlToStack "interface %s extends %s {" i.Name baseTypeName
-            Pt.Print "interface %s" baseTypeName
+            Pt.Printl "interface %s" baseTypeName
         else
-            Pt.Print "interface %s" i.Name
+            Pt.Printl "interface %s" i.Name
 
         let finalExtends =
             let overridenExtendsFromJson =
