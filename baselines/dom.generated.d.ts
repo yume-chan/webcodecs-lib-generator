@@ -1385,6 +1385,7 @@ interface AudioNode extends EventTarget {
     readonly numberOfInputs: number;
     readonly numberOfOutputs: number;
     connect(destination: AudioNode, output?: number, input?: number): AudioNode;
+    connect(destination: AudioParam, output?: number): void;
     disconnect(output?: number): void;
     disconnect(destination: AudioNode, output?: number, input?: number): void;
     disconnect(destination: AudioParam, output?: number): void;
@@ -2389,7 +2390,7 @@ declare var DOMException: {
     readonly WRONG_DOCUMENT_ERR: number;
 }
 interface DOMImplementation {
-    createDocument(namespaceURI: string | null, qualifiedName: string | null, doctype: DocumentType): Document;
+    createDocument(namespaceURI: string | null, qualifiedName: string | null, doctype: DocumentType | null): Document;
     createDocumentType(qualifiedName: string, publicId: string, systemId: string): DocumentType;
     createHTMLDocument(title: string): Document;
     hasFeature(feature: string | null, version: string | null): boolean;

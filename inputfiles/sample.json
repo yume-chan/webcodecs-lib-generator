@@ -348,10 +348,5 @@
                 "type": "HTMLCollection"
             }
         ]
-    },
-    {
-        "kind": "interfaceDeclarationName",
-        "interface": "Event",
-        "newName": "Event<T extends EventTarget>"
     }
 ]

@@ -159,7 +159,6 @@ module InputJson =
         | SignatureOverload
         | TypeDef
         | Extends
-        | InterfaceDeclarationName
         override x.ToString() =
             match x with
             | Property _ -> "property"
@@ -172,7 +171,6 @@ module InputJson =
             | SignatureOverload _ -> "signatureoverload"
             | TypeDef _ -> "typedef"
             | Extends _ -> "extends"
-            | InterfaceDeclarationName -> "interfacedeclarationname"
 
     let getItemByName (allItems: InputJsonType.Root []) (itemName: string) (kind: ItemKind) otherFilter =
         let filter (item: InputJsonType.Root) =
@@ -907,9 +905,9 @@ module Emit =
              | Some pollutor -> "this: " + pollutor.Name + ", "
              | _ -> ""
 
-    let ComputeEventTypeParameter eventType flavor (prefix: string) =
+    let ComputeEventTypeParameter containingInterfaceName flavor (prefix: string) =
         if prefix.StartsWith("declare ") then "<" + GetGlobalPollutorName flavor + ">"
-        elif List.contains eventType nonEventTargetTypes then "<T>" 
+        elif List.contains containingInterfaceName nonEventTargetTypes then "<T>" 
         else "<this>"
 
     let EmitProperties flavor prefix (emitScope: EmitScope) (i: Browser.Interface) (conflictedMembers: Set<string>) =
@@ -1104,8 +1102,9 @@ module Emit =
 
         if shouldEmitStringEventHandler then
             Pt.Printl
-                "%saddEventListener(type: string, listener: EventListenerOrEventListenerObject<%s>, useCapture?: boolean): void;"
-                fPrefix (if fPrefix = "" then "this" else GetGlobalPollutorName flavor)
+                "%saddEventListener(type: string, listener: EventListenerOrEventListenerObject%s, useCapture?: boolean): void;"
+                fPrefix
+                (ComputeEventTypeParameter i.Name flavor prefix)
 
     let EmitConstructorSignature (i:Browser.Interface) =
         let emitConstructorSigFromJson (c: InputJsonType.Root) =
@@ -1156,25 +1155,17 @@ module Emit =
                 Pt.Printl "declare var %s: {new(%s): %s; };" nc.Name (ParamsToString ncParams) i.Name)
 
     let EmitInterfaceDeclaration (i:Browser.Interface) =
-        let getOverridenNameIfAny iName =
-            let overridenIName = InputJson.getOverriddenItemsByInterfaceName InputJson.InterfaceDeclarationName Flavor.All i.Name |> Array.tryHead
-            match overridenIName with
-            | Some item -> item.NewName.Value
-            | _ -> iName
-
         let generateBaseTypeNameIfNecessary iName =
             match Map.tryFind iName extendConflictsBaseTypes with
             | Some _ -> iName + "Base"
             | _ -> iName
 
-        let finalIName = getOverridenNameIfAny i.Name
-
         let baseTypeName = generateBaseTypeNameIfNecessary i.Name
         if baseTypeName <> i.Name then
-            Pt.PrintlToStack "interface %s extends %s {" finalIName baseTypeName
+            Pt.PrintlToStack "interface %s extends %s {" i.Name baseTypeName
             Pt.Print "interface %s" baseTypeName
         else
-            Pt.Print "interface %s" finalIName
+            Pt.Print "interface %s" i.Name
 
         let finalExtends =
             let overridenExtendsFromJson =
@@ -1196,20 +1187,29 @@ module Emit =
 
             combinedExtends |> List.map generateBaseTypeNameIfNecessary
 
-        match finalExtends  with
-        | [] -> 
-            if List.contains i.Name nonEventTargetTypes then
-                Pt.Print "<T extends EventTarget = EventTarget>"
-        | allExtends ->
-            let mutable typeParameter = ""
-            let mutable extendsToPrint = allExtends
+        let mutable typeParameter = ""
+        let mutable extendsToPrint = finalExtends
+        if List.contains i.Name nonEventTargetTypes || i.Name = "Event" then
+            typeParameter <- "<T extends EventTarget = EventTarget>"
+
+        if not (List.isEmpty finalExtends) then
+            // Cases:
+            // 1. Direct inheritance of "Event"
+            //     interface XYZEvent<T> extends EventTarget = EventTarget> extends Event<T>
+            // 2. Indirect inheritance of "Event"
+            //     interface XYZEvent<T> extends EventTarget = EventTarget> extends UIEvent<T>
             if IsDependsOn i.Name "Event" then
                 typeParameter <- "<T extends EventTarget = EventTarget>"
-                extendsToPrint <- extendsToPrint |> List.map (fun extends -> if extends = "Event" || IsDependsOn extends "Event" then extends + "<T>" else extends)
+                extendsToPrint <- extendsToPrint |> List.map (fun baseType -> if baseType = "Event" || IsDependsOn baseType "Event" then baseType + "<T>" else baseType)
+            // If the current interface inherits from one of the non-eventtarget mixin types, the
+            // type argument should be the interface itself, if it also extends EventTarget. E.g.
+            // 
+            //    interface XYZEventTarget extends EventTarget, GlobalEventHandlers<XYZEventTarget>
             if IsDependsOn i.Name "EventTarget" then
                 extendsToPrint <- extendsToPrint |> List.map (fun extends -> if List.contains extends nonEventTargetTypes then extends + "<" + i.Name + ">" else extends)
-            Pt.Print "%s extends %s" typeParameter (String.Join(", ", extendsToPrint))
-            
+        Pt.Print "%s" typeParameter
+        if not (List.isEmpty extendsToPrint) then
+            Pt.Print " extends %s" (String.Join(", ", extendsToPrint))
         Pt.Print " {"
 
     /// To decide if a given method is an indexer and should be emited
