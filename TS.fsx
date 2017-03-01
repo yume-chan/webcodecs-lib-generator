@@ -1189,10 +1189,13 @@ module Emit =
 
         match finalExtends  with
         | [] -> ()
-        | allExtends -> 
-            let eventTypeParameter = if List.contains "Event" allExtends then "<T extends EventTarget = EventTarget>" else ""
-            let extendsToPrint = allExtends |> List.map (fun extends -> if extends = "Event" then "Event<T>" else extends)
-            Pt.Print "%s extends %s" eventTypeParameter (String.Join(", ", extendsToPrint))
+        | allExtends ->
+            if IsDependsOn i.Name "Event" then
+                let extendsToPrint = allExtends |> List.map (fun extends -> if extends = "Event" || IsDependsOn extends "Event" then extends + "<T>" else extends)
+                Pt.Print "<T extends EventTarget = EventTarget> extends %s" (String.Join(", ", extendsToPrint))
+            else
+                Pt.Print " extends %s" (String.Join(", ", allExtends))
+            
         Pt.Print " {"
 
     /// To decide if a given method is an indexer and should be emited
