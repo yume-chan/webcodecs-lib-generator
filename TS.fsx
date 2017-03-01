@@ -1163,9 +1163,9 @@ module Emit =
         let baseTypeName = generateBaseTypeNameIfNecessary i.Name
         if baseTypeName <> i.Name then
             Pt.PrintlToStack "interface %s extends %s {" finalIName baseTypeName
-            Pt.Printl "interface %s" baseTypeName
+            Pt.Print "interface %s" baseTypeName
         else
-            Pt.Printl "interface %s" finalIName
+            Pt.Print "interface %s" finalIName
 
         let finalExtends =
             let overridenExtendsFromJson =
@@ -1189,7 +1189,10 @@ module Emit =
 
         match finalExtends  with
         | [] -> ()
-        | allExtends -> Pt.Print " extends %s" (String.Join(", ", allExtends))
+        | allExtends -> 
+            let eventTypeParameter = if List.contains "Event" allExtends then "<T extends EventTarget = EventTarget>" else ""
+            let extendsToPrint = allExtends |> List.map (fun extends -> if extends = "Event" then "Event<T>" else extends)
+            Pt.Print "%s extends %s" eventTypeParameter (String.Join(", ", extendsToPrint))
         Pt.Print " {"
 
     /// To decide if a given method is an indexer and should be emited
