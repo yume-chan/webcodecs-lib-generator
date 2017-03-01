@@ -907,10 +907,10 @@ module Emit =
              | Some pollutor -> "this: " + pollutor.Name + ", "
              | _ -> ""
 
-    let ComputerEventTypeParameter eventType flavor (prefix: string) =
-        if List.contains eventType nonEventTargetTypes then ""
-        else 
-            if prefix.StartsWith("declare ") then "<" + GetGlobalPollutorName flavor + ">" else "<this>"
+    let ComputeEventTypeParameter eventType flavor (prefix: string) =
+        if prefix.StartsWith("declare ") then "<" + GetGlobalPollutorName flavor + ">"
+        elif List.contains eventType nonEventTargetTypes then "<T>" 
+        else "<this>"
 
     let EmitProperties flavor prefix (emitScope: EmitScope) (i: Browser.Interface) (conflictedMembers: Set<string>) =
         let emitPropertyFromJson (p: InputJsonType.Root) =
@@ -952,7 +952,7 @@ module Emit =
                                 "({0}ev: {1}{2}) => any",
                                 EmitEventHandlerThis flavor prefix i,
                                 eType,
-                                ComputerEventTypeParameter i.Name flavor prefix)
+                                ComputeEventTypeParameter i.Name flavor prefix)
                         | _ -> DomTypeToTsType p.Type
                     let pTypeAndNull = if p.Nullable.IsSome then makeNullable pType else pType
                     let readOnlyModifier = if p.ReadOnly.IsSome && prefix = "" then "readonly " else ""
@@ -1197,13 +1197,18 @@ module Emit =
             combinedExtends |> List.map generateBaseTypeNameIfNecessary
 
         match finalExtends  with
-        | [] -> ()
+        | [] -> 
+            if List.contains i.Name nonEventTargetTypes then
+                Pt.Print "<T extends EventTarget = EventTarget>"
         | allExtends ->
+            let mutable typeParameter = ""
+            let mutable extendsToPrint = allExtends
             if IsDependsOn i.Name "Event" then
-                let extendsToPrint = allExtends |> List.map (fun extends -> if extends = "Event" || IsDependsOn extends "Event" then extends + "<T>" else extends)
-                Pt.Print "<T extends EventTarget = EventTarget> extends %s" (String.Join(", ", extendsToPrint))
-            else
-                Pt.Print " extends %s" (String.Join(", ", allExtends))
+                typeParameter <- "<T extends EventTarget = EventTarget>"
+                extendsToPrint <- extendsToPrint |> List.map (fun extends -> if extends = "Event" || IsDependsOn extends "Event" then extends + "<T>" else extends)
+            if IsDependsOn i.Name "EventTarget" then
+                extendsToPrint <- extendsToPrint |> List.map (fun extends -> if List.contains extends nonEventTargetTypes then extends + "<" + i.Name + ">" else extends)
+            Pt.Print "%s extends %s" typeParameter (String.Join(", ", extendsToPrint))
             
         Pt.Print " {"
 
