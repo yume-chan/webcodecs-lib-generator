@@ -1167,8 +1167,8 @@ interface WheelEventInit extends MouseEventInit {
     deltaMode?: number;
 }
 
-interface EventListener {
-    (evt: Event): void;
+interface EventListener<T extends EventTarget> {
+    (evt: Event<T>): void;
 }
 
 interface WebKitEntriesCallback {
@@ -3545,7 +3545,7 @@ interface ElementEventMap extends GlobalEventHandlersEventMap {
     "webkitfullscreenerror": Event;
 }
 
-interface Element extends Node, GlobalEventHandlers, ElementTraversal, NodeSelector, ChildNode, ParentNode {
+interface Element extends Node, GlobalEventHandlers, ElementTraversal, NodeSelector, ChildNode, ParentNode, EventTarget {
     readonly classList: DOMTokenList;
     className: string;
     readonly clientHeight: number;
@@ -3663,17 +3663,17 @@ declare var ErrorEvent: {
     new(type: string, errorEventInitDict?: ErrorEventInit): ErrorEvent;
 }
 
-interface Event {
+interface Event<T extends EventTarget = EventTarget> {
     readonly bubbles: boolean;
     cancelBubble: boolean;
     readonly cancelable: boolean;
-    readonly currentTarget: EventTarget;
+    readonly currentTarget: T;
     readonly defaultPrevented: boolean;
     readonly eventPhase: number;
     readonly isTrusted: boolean;
     returnValue: boolean;
     readonly srcElement: Element | null;
-    readonly target: EventTarget;
+    readonly target: T;
     readonly timeStamp: number;
     readonly type: string;
     readonly scoped: boolean;
@@ -14148,7 +14148,7 @@ interface PromiseRejectionEventInit extends EventInit {
     reason?: any;
 }
 
-declare type EventListenerOrEventListenerObject = EventListener | EventListenerObject;
+declare type EventListenerOrEventListenerObject<T extends EventTarget = EventTarget> = EventListener<T> | EventListenerObject;
 
 interface ErrorEventHandler {
     (message: string, filename?: string, lineno?: number, colno?: number, error?:Error): void;

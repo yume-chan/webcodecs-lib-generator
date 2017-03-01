@@ -159,6 +159,7 @@ module InputJson =
         | SignatureOverload
         | TypeDef
         | Extends
+        | InterfaceDeclarationName
         override x.ToString() =
             match x with
             | Property _ -> "property"
@@ -171,6 +172,7 @@ module InputJson =
             | SignatureOverload _ -> "signatureoverload"
             | TypeDef _ -> "typedef"
             | Extends _ -> "extends"
+            | InterfaceDeclarationName -> "interfacedeclarationname"
 
     let getItemByName (allItems: InputJsonType.Root []) (itemName: string) (kind: ItemKind) otherFilter =
         let filter (item: InputJsonType.Root) =
@@ -698,7 +700,7 @@ module Emit =
         | "DOMString" -> "string"
         | "DOMTimeStamp" -> "number"
         | "EndOfStreamError" -> "number"
-        | "EventListener" -> "EventListenerOrEventListenerObject"
+        | "EventListener" -> "EventListenerOrEventListenerObject<this>"
         | "double" | "float" -> "number"
         | "Function" -> "Function"
         | "long" | "long long" | "signed long" | "signed long long" | "unsigned long" | "unsigned long long" -> "number"
@@ -854,8 +856,17 @@ module Emit =
         String.Join(", ", (List.map paramToString ps))
 
     let EmitCallBackInterface (i:Browser.Interface) =
-        Pt.Printl "interface %s {" i.Name
-        Pt.PrintWithAddedIndent "(evt: Event): void;"
+        if i.Name = "EventListener" then
+            Pt.Printl "interface %s<T extends EventTarget> {" i.Name
+            Pt.PrintWithAddedIndent "(evt: Event<T>): void;"
+        else
+            Pt.Printl "interface %s {" i.Name
+            let handleEventMethod = i.Methods.Value.Methods |> Array.find (fun m -> m.Name.Value = "handleEvent")
+            let paramList =
+                [for p in handleEventMethod.Params do
+                    yield {Type = p.Type; Name = p.Name; Optional = p.Optional.IsSome; Variadic = p.Variadic.IsSome; Nullable = p.Nullable.IsSome}]
+            Pt.PrintWithAddedIndent "(%s): void;" (ParamsToString paramList)
+        
         Pt.Printl "}"
         Pt.Printl ""
 
@@ -968,7 +979,7 @@ module Emit =
             matchScope emitScope m &&
             not (prefix <> "" && OptionCheckValue "addEventListener" m.Name)
 
-        let emitMethod flavor prefix (i:Browser.Interface) (m:Browser.Method) =
+        let emitMethod flavor (prefix: string) (i:Browser.Interface) (m:Browser.Method) =
             let printLine content =
                 if m.Name.IsSome && conflictedMembers.Contains m.Name.Value then Pt.PrintlToStack content else Pt.Printl content
             // print comment
@@ -981,6 +992,13 @@ module Emit =
             // the "overridenType".
             let removedType = Option.bind (fun name -> InputJson.getRemovedItemByName name InputJson.ItemKind.Method i.Name) m.Name
             let overridenType = Option.bind (fun mName -> InputJson.getOverriddenItemByName mName InputJson.ItemKind.Method i.Name) m.Name
+
+            let replaceThisWithGlobalPollutor (signature: string) =
+                if prefix.StartsWith "declare " then
+                    let regex = Regex(@"\bthis\b")
+                    regex.Replace(signature, GetGlobalPollutorName flavor)
+                else
+                    signature
 
             if removedType.IsNone then
                 match overridenType with
@@ -1005,7 +1023,7 @@ module Emit =
 
                         let overloads = GetOverloads (Function.Method m) false
                         for { ParamCombinations = pCombList; ReturnTypes = rTypes; Nullable = isNullable } in overloads do
-                            let paramsString = ParamsToString pCombList
+                            let paramsString = ParamsToString pCombList |> replaceThisWithGlobalPollutor
                             let returnString =
                                 let returnType = rTypes |> List.map DomTypeToTsType |> String.concat " | "
                                 if isNullable then makeNullable returnType else returnType
@@ -1057,8 +1075,14 @@ module Emit =
                 "%saddEventListener<K extends keyof %sEventMap>(type: K, listener: (this: %s, ev: %sEventMap[K]) => any, useCapture?: boolean): void;"
                 prefix iParent.Name i.Name iParent.Name
 
+        // these types are only mixins to define shared events, they don't extend the EventTarget interface, therefore no need to
+        // emit "addEventListener" for them
+        let specialTypes = ["GlobalEventHandlers"; "AbstractWorker"; "XMLHttpRequestEventTarget"; "MSBaseReader"]
+
         let shouldEmitStringEventHandler =
-            if iNameToEhList.ContainsKey i.Name  && not iNameToEhList.[i.Name].IsEmpty then
+            if List.contains i.Name specialTypes then
+                false
+            elif iNameToEhList.ContainsKey i.Name  && not iNameToEhList.[i.Name].IsEmpty then
                 emitEventHandler fPrefix i
                 true
             elif iNameToEhParents.ContainsKey i.Name && not iNameToEhParents.[i.Name].IsEmpty then
@@ -1071,8 +1095,8 @@ module Emit =
 
         if shouldEmitStringEventHandler then
             Pt.Printl
-                "%saddEventListener(type: string, listener: EventListenerOrEventListenerObject, useCapture?: boolean): void;"
-                fPrefix
+                "%saddEventListener(type: string, listener: EventListenerOrEventListenerObject<%s>, useCapture?: boolean): void;"
+                fPrefix (if fPrefix = "" then "this" else GetGlobalPollutorName flavor)
 
     let EmitConstructorSignature (i:Browser.Interface) =
         let emitConstructorSigFromJson (c: InputJsonType.Root) =
@@ -1123,16 +1147,26 @@ module Emit =
                 Pt.Printl "declare var %s: {new(%s): %s; };" nc.Name (ParamsToString ncParams) i.Name)
 
     let EmitInterfaceDeclaration (i:Browser.Interface) =
-        let processIName iName =
+        let getOverridenNameIfAny iName =
+            let overridenIName = InputJson.getOverriddenItemsByInterfaceName InputJson.InterfaceDeclarationName Flavor.All i.Name |> Array.tryHead
+            match overridenIName with
+            | Some item -> item.NewName.Value
+            | _ -> iName
+
+        let generateBaseTypeNameIfNecessary iName =
             match Map.tryFind iName extendConflictsBaseTypes with
             | Some _ -> iName + "Base"
             | _ -> iName
 
-        let processedIName = processIName i.Name
-        if processedIName <> i.Name then
-            Pt.PrintlToStack "interface %s extends %s {" i.Name processedIName
+        let finalIName = getOverridenNameIfAny i.Name
 
-        Pt.Printl "interface %s" processedIName
+        let baseTypeName = generateBaseTypeNameIfNecessary i.Name
+        if baseTypeName <> i.Name then
+            Pt.PrintlToStack "interface %s extends %s {" finalIName baseTypeName
+            Pt.Printl "interface %s" baseTypeName
+        else
+            Pt.Printl "interface %s" finalIName
+
         let finalExtends =
             let overridenExtendsFromJson =
                 InputJson.getOverriddenItemsByInterfaceName ItemKind.Extends Flavor.All i.Name
@@ -1151,7 +1185,7 @@ module Emit =
                 else
                     overridenExtendsFromJson
 
-            combinedExtends |> List.map processIName
+            combinedExtends |> List.map generateBaseTypeNameIfNecessary
 
         match finalExtends  with
         | [] -> ()
@@ -1466,7 +1500,7 @@ module Emit =
         // Add missed interface definition from the spec
         InputJson.getAddedItems InputJson.Interface flavor |> Array.iter EmitAddedInterface
 
-        Pt.Printl "declare type EventListenerOrEventListenerObject = EventListener | EventListenerObject;"
+        Pt.Printl "declare type EventListenerOrEventListenerObject<T extends EventTarget> = EventListener<T> | EventListenerObject<T>;"
         Pt.Printl ""
 
         EmitCallBackFunctions flavor

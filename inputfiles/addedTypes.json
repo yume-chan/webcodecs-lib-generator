@@ -230,11 +230,11 @@
     },
     {
         "kind": "interface",
-        "name": "EventListenerObject",
+        "name": "EventListenerObject<T extends EventTarget>",
         "methods": [
             {
                 "name": "handleEvent",
-                "signatures": ["handleEvent(evt: Event): void"]
+                "signatures": ["handleEvent(evt: Event<T>): void"]
             }
         ]
     },

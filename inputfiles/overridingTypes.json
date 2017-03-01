@@ -991,5 +991,24 @@
         "interface": "DOMImplementation",
         "name": "hasFeature",
         "signatures": ["hasFeature(feature: string | null, version: string | null): boolean"]
+    },
+    {
+        "kind": "interfaceDeclarationName",
+        "interface": "Event",
+        "newName": "Event<T extends EventTarget = EventTarget>"
+    },
+    {
+        "kind": "property",
+        "interface": "Event",
+        "name": "currentTarget",
+        "readonly": true,
+        "type": "T"
+    },
+    {
+        "kind": "property",
+        "interface": "Event",
+        "name": "target",
+        "readonly": true,
+        "type": "T"
     }
  ]
