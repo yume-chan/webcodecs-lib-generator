@@ -1167,7 +1167,7 @@ interface WheelEventInit extends MouseEventInit {
     deltaMode?: number;
 }
 
-interface EventListener<T extends EventTarget> {
+interface EventListener<T extends EventTarget<T>> {
     (evt: Event<T>): void;
 }
 
@@ -1213,7 +1213,7 @@ declare var AnalyserNode: {
     new(): AnalyserNode;
 }
 
-interface AnimationEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface AnimationEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly animationName: string;
     readonly elapsedTime: number;
     initAnimationEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, animationNameArg: string, elapsedTimeArg: number): void;
@@ -1423,7 +1423,7 @@ declare var AudioParam: {
     new(): AudioParam;
 }
 
-interface AudioProcessingEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface AudioProcessingEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly inputBuffer: AudioBuffer;
     readonly outputBuffer: AudioBuffer;
     readonly playbackTime: number;
@@ -1480,7 +1480,7 @@ declare var BarProp: {
     new(): BarProp;
 }
 
-interface BeforeUnloadEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface BeforeUnloadEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     returnValue: any;
 }
 
@@ -2236,7 +2236,7 @@ declare var ClientRectList: {
     new(): ClientRectList;
 }
 
-interface ClipboardEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ClipboardEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly clipboardData: DataTransfer;
 }
 
@@ -2245,7 +2245,7 @@ declare var ClipboardEvent: {
     new(type: string, eventInitDict?: ClipboardEventInit): ClipboardEvent;
 }
 
-interface CloseEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface CloseEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly code: number;
     readonly reason: string;
     readonly wasClean: boolean;
@@ -2266,7 +2266,7 @@ declare var Comment: {
     new(): Comment;
 }
 
-interface CompositionEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface CompositionEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly data: string;
     readonly locale: string;
     initCompositionEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, dataArg: string, locale: string): void;
@@ -2363,7 +2363,7 @@ declare var CryptoKeyPair: {
     new(): CryptoKeyPair;
 }
 
-interface CustomEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface CustomEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly detail: any;
     initCustomEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, detailArg: any): void;
 }
@@ -2603,7 +2603,7 @@ declare var DeviceAcceleration: {
     new(): DeviceAcceleration;
 }
 
-interface DeviceLightEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface DeviceLightEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly value: number;
 }
 
@@ -2612,7 +2612,7 @@ declare var DeviceLightEvent: {
     new(typeArg: string, eventInitDict?: DeviceLightEventInit): DeviceLightEvent;
 }
 
-interface DeviceMotionEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface DeviceMotionEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly acceleration: DeviceAcceleration | null;
     readonly accelerationIncludingGravity: DeviceAcceleration | null;
     readonly interval: number | null;
@@ -2625,7 +2625,7 @@ declare var DeviceMotionEvent: {
     new(typeArg: string, eventInitDict?: DeviceMotionEventInit): DeviceMotionEvent;
 }
 
-interface DeviceOrientationEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface DeviceOrientationEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly absolute: boolean;
     readonly alpha: number | null;
     readonly beta: number | null;
@@ -3471,7 +3471,7 @@ declare var DocumentType: {
     new(): DocumentType;
 }
 
-interface DragEvent<T extends EventTarget = EventTarget> extends MouseEvent<T> {
+interface DragEvent<T extends EventTarget<T> = EventTarget> extends MouseEvent<T> {
     readonly dataTransfer: DataTransfer;
     initDragEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget, dataTransferArg: DataTransfer): void;
     msConvertURL(file: File, targetType: string, targetURL?: string): void;
@@ -3650,7 +3650,7 @@ declare var Element: {
     new(): Element;
 }
 
-interface ErrorEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ErrorEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly colno: number;
     readonly error: any;
     readonly filename: string;
@@ -3664,7 +3664,7 @@ declare var ErrorEvent: {
     new(type: string, errorEventInitDict?: ErrorEventInit): ErrorEvent;
 }
 
-interface Event<T extends EventTarget = EventTarget> {
+interface Event<T extends EventTarget<T> = EventTarget> {
     readonly bubbles: boolean;
     cancelBubble: boolean;
     readonly cancelable: boolean;
@@ -3694,12 +3694,6 @@ declare var Event: {
     readonly AT_TARGET: number;
     readonly BUBBLING_PHASE: number;
     readonly CAPTURING_PHASE: number;
-}
-
-interface EventTarget {
-    addEventListener(type: string, listener?: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
-    dispatchEvent(evt: Event): boolean;
-    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
 }
 
 declare var EventTarget: {
@@ -3767,7 +3761,7 @@ declare var FileReader: {
     new(): FileReader;
 }
 
-interface FocusEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface FocusEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly relatedTarget: EventTarget;
     initFocusEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, relatedTargetArg: EventTarget): void;
 }
@@ -3777,7 +3771,7 @@ declare var FocusEvent: {
     new(typeArg: string, eventInitDict?: FocusEventInit): FocusEvent;
 }
 
-interface FocusNavigationEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface FocusNavigationEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly navigationReason: string;
     readonly originHeight: number;
     readonly originLeft: number;
@@ -3834,7 +3828,7 @@ declare var GamepadButton: {
     new(): GamepadButton;
 }
 
-interface GamepadEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface GamepadEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly gamepad: Gamepad;
 }
 
@@ -6913,7 +6907,7 @@ declare var HTMLVideoElement: {
     new(): HTMLVideoElement;
 }
 
-interface HashChangeEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface HashChangeEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly newURL: string | null;
     readonly oldURL: string | null;
 }
@@ -7149,7 +7143,7 @@ declare var IDBTransaction: {
     readonly VERSION_CHANGE: string;
 }
 
-interface IDBVersionChangeEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface IDBVersionChangeEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly newVersion: number | null;
     readonly oldVersion: number;
 }
@@ -7209,7 +7203,7 @@ declare var IntersectionObserverEntry: {
     new(intersectionObserverEntryInit: IntersectionObserverEntryInit): IntersectionObserverEntry;
 }
 
-interface KeyboardEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface KeyboardEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly altKey: boolean;
     readonly char: string | null;
     readonly charCode: number;
@@ -7244,7 +7238,7 @@ declare var KeyboardEvent: {
     readonly DOM_KEY_LOCATION_STANDARD: number;
 }
 
-interface ListeningStateChangedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ListeningStateChangedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly label: string;
     readonly state: string;
 }
@@ -7275,7 +7269,7 @@ declare var Location: {
     new(): Location;
 }
 
-interface LongRunningScriptDetectedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface LongRunningScriptDetectedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly executionTime: number;
     stopPageScriptExecution: boolean;
 }
@@ -7408,7 +7402,7 @@ declare var MSGesture: {
     new(): MSGesture;
 }
 
-interface MSGestureEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface MSGestureEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly clientX: number;
     readonly clientY: number;
     readonly expansion: number;
@@ -7514,7 +7508,7 @@ declare var MSInputMethodContext: {
     new(): MSInputMethodContext;
 }
 
-interface MSManipulationEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface MSManipulationEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly currentState: number;
     readonly inertiaDestinationX: number;
     readonly inertiaDestinationY: number;
@@ -7565,7 +7559,7 @@ declare var MSMediaKeyError: {
     readonly MS_MEDIA_KEYERR_UNKNOWN: number;
 }
 
-interface MSMediaKeyMessageEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MSMediaKeyMessageEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly destinationURL: string | null;
     readonly message: Uint8Array;
 }
@@ -7575,7 +7569,7 @@ declare var MSMediaKeyMessageEvent: {
     new(): MSMediaKeyMessageEvent;
 }
 
-interface MSMediaKeyNeededEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MSMediaKeyNeededEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly initData: Uint8Array | null;
 }
 
@@ -7609,7 +7603,7 @@ declare var MSMediaKeys: {
     isTypeSupportedWithFeatures(keySystem: string, type?: string): string;
 }
 
-interface MSPointerEvent<T extends EventTarget = EventTarget> extends MouseEvent<T> {
+interface MSPointerEvent<T extends EventTarget<T> = EventTarget> extends MouseEvent<T> {
     readonly currentPoint: any;
     readonly height: number;
     readonly hwTimestamp: number;
@@ -7643,7 +7637,7 @@ declare var MSRangeCollection: {
     new(): MSRangeCollection;
 }
 
-interface MSSiteModeEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MSSiteModeEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly actionURL: string;
     readonly buttonID: number;
 }
@@ -7763,7 +7757,7 @@ declare var MediaElementAudioSourceNode: {
     new(): MediaElementAudioSourceNode;
 }
 
-interface MediaEncryptedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MediaEncryptedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly initData: ArrayBuffer | null;
     readonly initDataType: string;
 }
@@ -7793,7 +7787,7 @@ declare var MediaError: {
     readonly MS_MEDIA_ERR_ENCRYPTED: number;
 }
 
-interface MediaKeyMessageEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MediaKeyMessageEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly message: ArrayBuffer;
     readonly messageType: string;
 }
@@ -7946,7 +7940,7 @@ declare var MediaStreamError: {
     new(): MediaStreamError;
 }
 
-interface MediaStreamErrorEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MediaStreamErrorEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly error: MediaStreamError | null;
 }
 
@@ -7955,7 +7949,7 @@ declare var MediaStreamErrorEvent: {
     new(typeArg: string, eventInitDict?: MediaStreamErrorEventInit): MediaStreamErrorEvent;
 }
 
-interface MediaStreamEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MediaStreamEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly stream: MediaStream | null;
 }
 
@@ -7999,7 +7993,7 @@ declare var MediaStreamTrack: {
     new(): MediaStreamTrack;
 }
 
-interface MediaStreamTrackEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MediaStreamTrackEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly track: MediaStreamTrack;
 }
 
@@ -8018,7 +8012,7 @@ declare var MessageChannel: {
     new(): MessageChannel;
 }
 
-interface MessageEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MessageEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly data: any;
     readonly origin: string;
     readonly ports: any;
@@ -8073,7 +8067,7 @@ declare var MimeTypeArray: {
     new(): MimeTypeArray;
 }
 
-interface MouseEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface MouseEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly altKey: boolean;
     readonly button: number;
     readonly buttons: number;
@@ -8107,7 +8101,7 @@ declare var MouseEvent: {
     new(typeArg: string, eventInitDict?: MouseEventInit): MouseEvent;
 }
 
-interface MutationEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MutationEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly attrChange: number;
     readonly attrName: string;
     readonly newValue: string;
@@ -8172,7 +8166,7 @@ declare var NamedNodeMap: {
     new(): NamedNodeMap;
 }
 
-interface NavigationCompletedEvent<T extends EventTarget = EventTarget> extends NavigationEvent<T> {
+interface NavigationCompletedEvent<T extends EventTarget<T> = EventTarget> extends NavigationEvent<T> {
     readonly isSuccess: boolean;
     readonly webErrorStatus: number;
 }
@@ -8182,7 +8176,7 @@ declare var NavigationCompletedEvent: {
     new(): NavigationCompletedEvent;
 }
 
-interface NavigationEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface NavigationEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly uri: string;
 }
 
@@ -8191,7 +8185,7 @@ declare var NavigationEvent: {
     new(): NavigationEvent;
 }
 
-interface NavigationEventWithReferrer<T extends EventTarget = EventTarget> extends NavigationEvent<T> {
+interface NavigationEventWithReferrer<T extends EventTarget<T> = EventTarget> extends NavigationEvent<T> {
     readonly referer: string;
 }
 
@@ -8433,7 +8427,7 @@ declare var OES_texture_half_float_linear: {
     new(): OES_texture_half_float_linear;
 }
 
-interface OfflineAudioCompletionEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface OfflineAudioCompletionEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly renderedBuffer: AudioBuffer;
 }
 
@@ -8481,7 +8475,7 @@ declare var OscillatorNode: {
     new(): OscillatorNode;
 }
 
-interface OverflowEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface OverflowEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly horizontalOverflow: boolean;
     readonly orient: number;
     readonly verticalOverflow: boolean;
@@ -8498,7 +8492,7 @@ declare var OverflowEvent: {
     readonly VERTICAL: number;
 }
 
-interface PageTransitionEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface PageTransitionEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly persisted: boolean;
 }
 
@@ -8576,7 +8570,7 @@ declare var PaymentRequest: {
     new(methodData: PaymentMethodData[], details: PaymentDetails, options?: PaymentOptions): PaymentRequest;
 }
 
-interface PaymentRequestUpdateEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface PaymentRequestUpdateEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     updateWith(d: Promise<PaymentDetails>): void;
 }
 
@@ -8799,7 +8793,7 @@ declare var PermissionRequest: {
     new(): PermissionRequest;
 }
 
-interface PermissionRequestedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface PermissionRequestedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly permissionRequest: PermissionRequest;
 }
 
@@ -8837,7 +8831,7 @@ declare var PluginArray: {
     new(): PluginArray;
 }
 
-interface PointerEvent<T extends EventTarget = EventTarget> extends MouseEvent<T> {
+interface PointerEvent<T extends EventTarget<T> = EventTarget> extends MouseEvent<T> {
     readonly currentPoint: any;
     readonly height: number;
     readonly hwTimestamp: number;
@@ -8860,7 +8854,7 @@ declare var PointerEvent: {
     new(typeArg: string, eventInitDict?: PointerEventInit): PointerEvent;
 }
 
-interface PopStateEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface PopStateEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly state: any;
     initPopStateEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, stateArg: any): void;
 }
@@ -8906,7 +8900,7 @@ declare var ProcessingInstruction: {
     new(): ProcessingInstruction;
 }
 
-interface ProgressEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ProgressEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly lengthComputable: boolean;
     readonly loaded: number;
     readonly total: number;
@@ -8952,7 +8946,7 @@ declare var PushSubscriptionOptions: {
     new(): PushSubscriptionOptions;
 }
 
-interface RTCDTMFToneChangeEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCDTMFToneChangeEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly tone: string;
 }
 
@@ -8985,7 +8979,7 @@ declare var RTCDtlsTransport: {
     new(transport: RTCIceTransport): RTCDtlsTransport;
 }
 
-interface RTCDtlsTransportStateChangedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCDtlsTransportStateChangedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly state: string;
 }
 
@@ -9027,7 +9021,7 @@ declare var RTCIceCandidate: {
     new(candidateInitDict?: RTCIceCandidateInit): RTCIceCandidate;
 }
 
-interface RTCIceCandidatePairChangedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCIceCandidatePairChangedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly pair: RTCIceCandidatePair;
 }
 
@@ -9057,7 +9051,7 @@ declare var RTCIceGatherer: {
     new(options: RTCIceGatherOptions): RTCIceGatherer;
 }
 
-interface RTCIceGathererEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCIceGathererEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly candidate: RTCIceCandidateDictionary | RTCIceCandidateComplete;
 }
 
@@ -9095,7 +9089,7 @@ declare var RTCIceTransport: {
     new(): RTCIceTransport;
 }
 
-interface RTCIceTransportStateChangedEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCIceTransportStateChangedEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly state: string;
 }
 
@@ -9150,7 +9144,7 @@ declare var RTCPeerConnection: {
     new(configuration: RTCConfiguration): RTCPeerConnection;
 }
 
-interface RTCPeerConnectionIceEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCPeerConnectionIceEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly candidate: RTCIceCandidate;
 }
 
@@ -9236,7 +9230,7 @@ declare var RTCSrtpSdesTransport: {
     getLocalParameters(): RTCSrtpSdesParameters[];
 }
 
-interface RTCSsrcConflictEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface RTCSsrcConflictEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly ssrc: number;
 }
 
@@ -11134,7 +11128,7 @@ declare var SVGZoomAndPan: {
     readonly SVG_ZOOMANDPAN_UNKNOWN: number;
 }
 
-interface SVGZoomEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface SVGZoomEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly newScale: number;
     readonly newTranslate: SVGPoint;
     readonly previousScale: number;
@@ -11199,7 +11193,7 @@ declare var Screen: {
     new(): Screen;
 }
 
-interface ScriptNotifyEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ScriptNotifyEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly callingUri: string;
     readonly value: string;
 }
@@ -11299,7 +11293,7 @@ declare var ServiceWorkerContainer: {
     new(): ServiceWorkerContainer;
 }
 
-interface ServiceWorkerMessageEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ServiceWorkerMessageEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly data: any;
     readonly lastEventId: string;
     readonly origin: string;
@@ -11391,7 +11385,7 @@ declare var SpeechSynthesis: {
     new(): SpeechSynthesis;
 }
 
-interface SpeechSynthesisEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface SpeechSynthesisEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly charIndex: number;
     readonly elapsedTime: number;
     readonly name: string;
@@ -11474,7 +11468,7 @@ declare var Storage: {
     new(): Storage;
 }
 
-interface StorageEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface StorageEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly url: string;
     key?: string;
     oldValue?: string;
@@ -11581,7 +11575,7 @@ declare var Text: {
     new(): Text;
 }
 
-interface TextEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface TextEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly data: string;
     readonly inputMethod: number;
     readonly locale: string;
@@ -11746,7 +11740,7 @@ declare var Touch: {
     new(): Touch;
 }
 
-interface TouchEvent<T extends EventTarget = EventTarget> extends UIEvent<T> {
+interface TouchEvent<T extends EventTarget<T> = EventTarget> extends UIEvent<T> {
     readonly altKey: boolean;
     readonly changedTouches: TouchList;
     readonly charCode: number;
@@ -11775,7 +11769,7 @@ declare var TouchList: {
     new(): TouchList;
 }
 
-interface TrackEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface TrackEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly track: VideoTrack | AudioTrack | TextTrack | null;
 }
 
@@ -11784,7 +11778,7 @@ declare var TrackEvent: {
     new(typeArg: string, eventInitDict?: TrackEventInit): TrackEvent;
 }
 
-interface TransitionEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface TransitionEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly elapsedTime: number;
     readonly propertyName: string;
     initTransitionEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, propertyNameArg: string, elapsedTimeArg: number): void;
@@ -11815,7 +11809,7 @@ declare var TreeWalker: {
     new(): TreeWalker;
 }
 
-interface UIEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface UIEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly detail: number;
     readonly view: Window;
     initUIEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number): void;
@@ -11849,7 +11843,7 @@ declare var URL: {
     revokeObjectURL(url: string): void;
 }
 
-interface UnviewableContentIdentifiedEvent<T extends EventTarget = EventTarget> extends NavigationEventWithReferrer<T> {
+interface UnviewableContentIdentifiedEvent<T extends EventTarget<T> = EventTarget> extends NavigationEventWithReferrer<T> {
     readonly mediaType: string;
 }
 
@@ -12016,7 +12010,7 @@ declare var WebGLBuffer: {
     new(): WebGLBuffer;
 }
 
-interface WebGLContextEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface WebGLContextEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly statusMessage: string;
 }
 
@@ -12972,7 +12966,7 @@ declare var WebSocket: {
     readonly OPEN: number;
 }
 
-interface WheelEvent<T extends EventTarget = EventTarget> extends MouseEvent<T> {
+interface WheelEvent<T extends EventTarget<T> = EventTarget> extends MouseEvent<T> {
     readonly deltaMode: number;
     readonly deltaX: number;
     readonly deltaY: number;
@@ -13462,7 +13456,7 @@ interface AbstractWorkerEventMap {
     "error": ErrorEvent;
 }
 
-interface AbstractWorker<T extends EventTarget = EventTarget> {
+interface AbstractWorker<T extends EventTarget<T> = EventTarget> {
     onerror: (this: AbstractWorker, ev: ErrorEvent<T>) => any;
 }
 
@@ -13597,7 +13591,7 @@ interface GlobalEventHandlersEventMap {
     "wheel": WheelEvent;
 }
 
-interface GlobalEventHandlers<T extends EventTarget = EventTarget> {
+interface GlobalEventHandlers<T extends EventTarget<T> = EventTarget> {
     onpointercancel: (this: GlobalEventHandlers, ev: PointerEvent<T>) => any;
     onpointerdown: (this: GlobalEventHandlers, ev: PointerEvent<T>) => any;
     onpointerenter: (this: GlobalEventHandlers, ev: PointerEvent<T>) => any;
@@ -13645,7 +13639,7 @@ interface MSBaseReaderEventMap {
     "progress": ProgressEvent;
 }
 
-interface MSBaseReader<T extends EventTarget = EventTarget> {
+interface MSBaseReader<T extends EventTarget<T> = EventTarget> {
     onabort: (this: MSBaseReader, ev: Event<T>) => any;
     onerror: (this: MSBaseReader, ev: ErrorEvent<T>) => any;
     onload: (this: MSBaseReader, ev: Event<T>) => any;
@@ -13795,7 +13789,7 @@ interface XMLHttpRequestEventTargetEventMap {
     "timeout": ProgressEvent;
 }
 
-interface XMLHttpRequestEventTarget<T extends EventTarget = EventTarget> {
+interface XMLHttpRequestEventTarget<T extends EventTarget<T> = EventTarget> {
     onabort: (this: XMLHttpRequestEventTarget, ev: Event<T>) => any;
     onerror: (this: XMLHttpRequestEventTarget, ev: ErrorEvent<T>) => any;
     onload: (this: XMLHttpRequestEventTarget, ev: Event<T>) => any;
@@ -13811,6 +13805,12 @@ interface ErrorEventInit {
     lineno?: number;
     conlno?: number;
     error?: any;
+}
+
+interface EventTarget<T = any> {
+    addEventListener(type: string, listener?: EventListenerOrEventListenerObject<EventTarget<T>>, useCapture?: boolean): void;
+    dispatchEvent(evt: Event): boolean;
+    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject<EventTarget<T>>, useCapture?: boolean): void;
 }
 
 interface StorageEventInit extends EventInit {
@@ -14141,7 +14141,7 @@ interface PromiseRejectionEventInit extends EventInit {
     reason?: any;
 }
 
-declare type EventListenerOrEventListenerObject<T extends EventTarget> = EventListener<T> | EventListenerObject<T>;
+declare type EventListenerOrEventListenerObject<T extends EventTarget<T>> = EventListener<T> | EventListenerObject<T>;
 
 interface ErrorEventHandler {
     (message: string, filename?: string, lineno?: number, colno?: number, error?:Error): void;

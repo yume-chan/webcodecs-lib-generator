@@ -123,7 +123,7 @@ interface SyncEventInit extends ExtendableEventInit {
     lastChance?: boolean;
 }
 
-interface EventListener<T extends EventTarget> {
+interface EventListener<T extends EventTarget<T>> {
     (evt: Event<T>): void;
 }
 
@@ -195,7 +195,7 @@ declare var CacheStorage: {
     new(): CacheStorage;
 }
 
-interface CloseEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface CloseEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly code: number;
     readonly reason: string;
     readonly wasClean: boolean;
@@ -352,7 +352,7 @@ declare var DOMStringList: {
     new(): DOMStringList;
 }
 
-interface ErrorEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ErrorEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly colno: number;
     readonly error: any;
     readonly filename: string;
@@ -366,7 +366,7 @@ declare var ErrorEvent: {
     new(type: string, errorEventInitDict?: ErrorEventInit): ErrorEvent;
 }
 
-interface Event<T extends EventTarget = EventTarget> {
+interface Event<T extends EventTarget<T> = EventTarget> {
     readonly bubbles: boolean;
     cancelBubble: boolean;
     readonly cancelable: boolean;
@@ -396,12 +396,6 @@ declare var Event: {
     readonly AT_TARGET: number;
     readonly BUBBLING_PHASE: number;
     readonly CAPTURING_PHASE: number;
-}
-
-interface EventTarget {
-    addEventListener(type: string, listener?: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
-    dispatchEvent(evt: Event): boolean;
-    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
 }
 
 declare var EventTarget: {
@@ -656,7 +650,7 @@ declare var IDBTransaction: {
     readonly VERSION_CHANGE: string;
 }
 
-interface IDBVersionChangeEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface IDBVersionChangeEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly newVersion: number | null;
     readonly oldVersion: number;
 }
@@ -688,7 +682,7 @@ declare var MessageChannel: {
     new(): MessageChannel;
 }
 
-interface MessageEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface MessageEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly data: any;
     readonly origin: string;
     readonly ports: any;
@@ -849,7 +843,7 @@ declare var PositionError: {
     readonly TIMEOUT: number;
 }
 
-interface ProgressEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ProgressEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     readonly lengthComputable: boolean;
     readonly loaded: number;
     readonly total: number;
@@ -1163,7 +1157,7 @@ interface AbstractWorkerEventMap {
     "error": ErrorEvent;
 }
 
-interface AbstractWorker<T extends EventTarget = EventTarget> {
+interface AbstractWorker<T extends EventTarget<T> = EventTarget> {
     onerror: (this: AbstractWorker, ev: ErrorEvent<T>) => any;
 }
 
@@ -1188,7 +1182,7 @@ interface MSBaseReaderEventMap {
     "progress": ProgressEvent;
 }
 
-interface MSBaseReader<T extends EventTarget = EventTarget> {
+interface MSBaseReader<T extends EventTarget<T> = EventTarget> {
     onabort: (this: MSBaseReader, ev: Event<T>) => any;
     onerror: (this: MSBaseReader, ev: ErrorEvent<T>) => any;
     onload: (this: MSBaseReader, ev: Event<T>) => any;
@@ -1246,7 +1240,7 @@ interface XMLHttpRequestEventTargetEventMap {
     "timeout": ProgressEvent;
 }
 
-interface XMLHttpRequestEventTarget<T extends EventTarget = EventTarget> {
+interface XMLHttpRequestEventTarget<T extends EventTarget<T> = EventTarget> {
     onabort: (this: XMLHttpRequestEventTarget, ev: Event<T>) => any;
     onerror: (this: XMLHttpRequestEventTarget, ev: ErrorEvent<T>) => any;
     onload: (this: XMLHttpRequestEventTarget, ev: Event<T>) => any;
@@ -1297,7 +1291,7 @@ declare var DedicatedWorkerGlobalScope: {
     new(): DedicatedWorkerGlobalScope;
 }
 
-interface ExtendableEvent<T extends EventTarget = EventTarget> extends Event<T> {
+interface ExtendableEvent<T extends EventTarget<T> = EventTarget> extends Event<T> {
     waitUntil(f: Promise<any>): void;
 }
 
@@ -1306,7 +1300,7 @@ declare var ExtendableEvent: {
     new(type: string, eventInitDict?: ExtendableEventInit): ExtendableEvent;
 }
 
-interface ExtendableMessageEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
+interface ExtendableMessageEvent<T extends EventTarget<T> = EventTarget> extends ExtendableEvent<T> {
     readonly data: any;
     readonly lastEventId: string;
     readonly origin: string;
@@ -1319,7 +1313,7 @@ declare var ExtendableMessageEvent: {
     new(type: string, eventInitDict?: ExtendableMessageEventInit): ExtendableMessageEvent;
 }
 
-interface FetchEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
+interface FetchEvent<T extends EventTarget<T> = EventTarget> extends ExtendableEvent<T> {
     readonly clientId: string | null;
     readonly isReload: boolean;
     readonly request: Request;
@@ -1343,7 +1337,7 @@ declare var FileReaderSync: {
     new(): FileReaderSync;
 }
 
-interface NotificationEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
+interface NotificationEvent<T extends EventTarget<T> = EventTarget> extends ExtendableEvent<T> {
     readonly action: string;
     readonly notification: Notification;
 }
@@ -1353,7 +1347,7 @@ declare var NotificationEvent: {
     new(type: string, eventInitDict: NotificationEventInit): NotificationEvent;
 }
 
-interface PushEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
+interface PushEvent<T extends EventTarget<T> = EventTarget> extends ExtendableEvent<T> {
     readonly data: PushMessageData | null;
 }
 
@@ -1408,7 +1402,7 @@ declare var ServiceWorkerGlobalScope: {
     new(): ServiceWorkerGlobalScope;
 }
 
-interface SyncEvent<T extends EventTarget = EventTarget> extends ExtendableEvent<T> {
+interface SyncEvent<T extends EventTarget<T> = EventTarget> extends ExtendableEvent<T> {
     readonly lastChance: boolean;
     readonly tag: string;
 }
@@ -1500,6 +1494,12 @@ interface ErrorEventInit {
     lineno?: number;
     conlno?: number;
     error?: any;
+}
+
+interface EventTarget<T = any> {
+    addEventListener(type: string, listener?: EventListenerOrEventListenerObject<EventTarget<T>>, useCapture?: boolean): void;
+    dispatchEvent(evt: Event): boolean;
+    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject<EventTarget<T>>, useCapture?: boolean): void;
 }
 
 interface BlobPropertyBag {
@@ -1696,7 +1696,7 @@ interface JsonWebKey {
     k?: string;
 }
 
-declare type EventListenerOrEventListenerObject<T extends EventTarget> = EventListener<T> | EventListenerObject<T>;
+declare type EventListenerOrEventListenerObject<T extends EventTarget<T>> = EventListener<T> | EventListenerObject<T>;
 
 interface ErrorEventHandler {
     (message: string, filename?: string, lineno?: number, colno?: number, error?:Error): void;
