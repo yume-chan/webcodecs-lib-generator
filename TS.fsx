@@ -859,7 +859,7 @@ module Emit =
 
     let EmitCallBackInterface (i:Browser.Interface) =
         if i.Name = "EventListener" then
-            Pt.Printl "interface %s<T extends EventTarget> {" i.Name
+            Pt.Printl "interface %s<T extends EventTarget<T>> {" i.Name
             Pt.PrintWithAddedIndent "(evt: Event<T>): void;"
         else
             Pt.Printl "interface %s {" i.Name
@@ -1190,7 +1190,7 @@ module Emit =
         let mutable typeParameter = ""
         let mutable extendsToPrint = finalExtends
         if List.contains i.Name nonEventTargetTypes || i.Name = "Event" then
-            typeParameter <- "<T extends EventTarget = EventTarget>"
+            typeParameter <- "<T extends EventTarget<T> = EventTarget>"
 
         if not (List.isEmpty finalExtends) then
             // Cases:
@@ -1199,7 +1199,7 @@ module Emit =
             // 2. Indirect inheritance of "Event"
             //     interface XYZEvent<T> extends EventTarget = EventTarget> extends UIEvent<T>
             if IsDependsOn i.Name "Event" then
-                typeParameter <- "<T extends EventTarget = EventTarget>"
+                typeParameter <- "<T extends EventTarget<T> = EventTarget>"
                 extendsToPrint <- extendsToPrint |> List.map (fun baseType -> if baseType = "Event" || IsDependsOn baseType "Event" then baseType + "<T>" else baseType)
             // If the current interface inherits from one of the non-eventtarget mixin types, the
             // type argument should be the interface itself, if it also extends EventTarget. E.g.
@@ -1298,27 +1298,30 @@ module Emit =
             Pt.Printl ""
 
     let EmitInterface flavor (i:Browser.Interface) =
-        Pt.ClearStack()
-        EmitInterfaceEventMap flavor i
+        match getRemovedItemByName i.Name ItemKind.Interface i.Name with
+        | Some _ -> ()
+        | _ ->
+            Pt.ClearStack()
+            EmitInterfaceEventMap flavor i
 
-        Pt.ResetIndent()
-        EmitInterfaceDeclaration i
-        Pt.IncreaseIndent()
+            Pt.ResetIndent()
+            EmitInterfaceDeclaration i
+            Pt.IncreaseIndent()
 
-        let prefix = ""
-        EmitMembers flavor prefix EmitScope.InstanceOnly i
-        EmitConstants i
-        EmitEventHandlers flavor prefix i
-        EmitIndexers EmitScope.InstanceOnly i
+            let prefix = ""
+            EmitMembers flavor prefix EmitScope.InstanceOnly i
+            EmitConstants i
+            EmitEventHandlers flavor prefix i
+            EmitIndexers EmitScope.InstanceOnly i
 
-        Pt.DecreaseIndent()
-        Pt.Printl "}"
-        Pt.Printl ""
-
-        if not (Pt.StackIsEmpty()) then
-            Pt.PrintStackContent()
+            Pt.DecreaseIndent()
             Pt.Printl "}"
             Pt.Printl ""
+
+            if not (Pt.StackIsEmpty()) then
+                Pt.PrintStackContent()
+                Pt.Printl "}"
+                Pt.Printl ""
 
     let EmitStaticInterface flavor (i:Browser.Interface) =
         // Some types are static types with non-static members. For example,
@@ -1520,7 +1523,7 @@ module Emit =
         // Add missed interface definition from the spec
         InputJson.getAddedItems InputJson.Interface flavor |> Array.iter EmitAddedInterface
 
-        Pt.Printl "declare type EventListenerOrEventListenerObject<T extends EventTarget> = EventListener<T> | EventListenerObject<T>;"
+        Pt.Printl "declare type EventListenerOrEventListenerObject<T extends EventTarget<T>> = EventListener<T> | EventListenerObject<T>;"
         Pt.Printl ""
 
         EmitCallBackFunctions flavor

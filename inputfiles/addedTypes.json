@@ -26,6 +26,24 @@
         ]
     },
     {
+        "kind": "interface",
+        "name": "EventTarget<T = any>",
+        "methods": [
+            {
+                "name": "addEventListener",
+                "signatures": ["addEventListener(type: string, listener?: EventListenerOrEventListenerObject<EventTarget<T>>, useCapture?: boolean): void"]
+            },
+            {
+                "name": "dispatchEvent",
+                "signatures": ["dispatchEvent(evt: Event): boolean"]
+            },
+            {
+                "name": "removeEventListener",
+                "signatures": ["removeEventListener(type: string, listener?: EventListenerOrEventListenerObject<EventTarget<T>>, useCapture?: boolean): void"]
+            }
+        ]
+    },
+    {
         "kind": "property",
         "interface": "CSSStyleDeclaration",
         "name": "resize",
