@@ -3450,6 +3450,7 @@ declare var Document: {
 }
 
 interface DocumentFragment extends Node, NodeSelector, ParentNode {
+    getElementById(elementId: string): HTMLElement | null;
 }
 
 declare var DocumentFragment: {
@@ -13255,6 +13256,8 @@ interface Window extends EventTarget, WindowTimers, WindowSessionStorage, Window
     webkitConvertPointFromNodeToPage(node: Node, pt: WebKitPoint): WebKitPoint;
     webkitConvertPointFromPageToNode(node: Node, pt: WebKitPoint): WebKitPoint;
     webkitRequestAnimationFrame(callback: FrameRequestCallback): number;
+    createImageBitmap(image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | ImageData | Blob, options?: ImageBitmapOptions): Promise<ImageBitmap>;
+    createImageBitmap(image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | ImageData | Blob, sx: number, sy: number, sw: number, sh: number, options?: ImageBitmapOptions): Promise<ImageBitmap>;
     scroll(options?: ScrollToOptions): void;
     scrollTo(options?: ScrollToOptions): void;
     scrollBy(options?: ScrollToOptions): void;
@@ -13466,6 +13469,7 @@ interface Body {
     blob(): Promise<Blob>;
     json(): Promise<any>;
     text(): Promise<string>;
+    formData(): Promise<FormData>;
 }
 
 interface CanvasPathMethods {
@@ -13826,6 +13830,21 @@ interface Canvas2DContextAttributes {
     willReadFrequently?: boolean;
     storage?: boolean;
     [attribute: string]: boolean | string | undefined;
+}
+
+interface ImageBitmapOptions {
+    imageOrientation?: "none" | "flipY";
+    premultiplyAlpha?: "none" | "premultiply" | "default";
+    colorSpaceConversion?: "none" | "default";
+    resizeWidth?: number;
+    resizeHeight?: number;
+    resizeQuality?: "pixelated" | "low" | "medium" | "high";
+}
+
+interface ImageBitmap {
+    readonly width: number;
+    readonly height: number;
+    close(): void;
 }
 
 interface URLSearchParams {
@@ -14833,6 +14852,8 @@ declare function webkitCancelAnimationFrame(handle: number): void;
 declare function webkitConvertPointFromNodeToPage(node: Node, pt: WebKitPoint): WebKitPoint;
 declare function webkitConvertPointFromPageToNode(node: Node, pt: WebKitPoint): WebKitPoint;
 declare function webkitRequestAnimationFrame(callback: FrameRequestCallback): number;
+declare function createImageBitmap(image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | ImageData | Blob, options?: ImageBitmapOptions): Promise<ImageBitmap>;
+declare function createImageBitmap(image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | ImageData | Blob, sx: number, sy: number, sw: number, sh: number, options?: ImageBitmapOptions): Promise<ImageBitmap>;
 declare function scroll(options?: ScrollToOptions): void;
 declare function scrollTo(options?: ScrollToOptions): void;
 declare function scrollBy(options?: ScrollToOptions): void;
