@@ -908,7 +908,7 @@ module Emit =
     let ComputeEventTypeParameter containingInterfaceName flavor (prefix: string) =
         if prefix.StartsWith("declare ") then "<" + GetGlobalPollutorName flavor + ">"
         elif List.contains containingInterfaceName nonEventTargetTypes then "<T>" 
-        else "<this>"
+        else "<" + containingInterfaceName + ">"
 
     let EmitProperties flavor prefix (emitScope: EmitScope) (i: Browser.Interface) (conflictedMembers: Set<string>) =
         let emitPropertyFromJson (p: InputJsonType.Root) =

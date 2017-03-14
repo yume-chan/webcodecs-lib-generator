@@ -432,7 +432,7 @@ interface FileReader extends EventTarget, MSBaseReader<FileReader> {
     readAsDataURL(blob: Blob): void;
     readAsText(blob: Blob, encoding?: string): void;
     addEventListener<K extends keyof MSBaseReaderEventMap>(type: K, listener: (this: FileReader, ev: MSBaseReaderEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<FileReader>, useCapture?: boolean): void;
 }
 
 declare var FileReader: {
@@ -495,8 +495,8 @@ interface IDBDatabaseEventMap {
 interface IDBDatabase extends EventTarget {
     readonly name: string;
     readonly objectStoreNames: DOMStringList;
-    onabort: (this: IDBDatabase, ev: Event<this>) => any;
-    onerror: (this: IDBDatabase, ev: Event<this>) => any;
+    onabort: (this: IDBDatabase, ev: Event<IDBDatabase>) => any;
+    onerror: (this: IDBDatabase, ev: Event<IDBDatabase>) => any;
     version: number;
     onversionchange: (ev: IDBVersionChangeEvent) => any;
     close(): void;
@@ -505,7 +505,7 @@ interface IDBDatabase extends EventTarget {
     transaction(storeNames: string | string[], mode?: string): IDBTransaction;
     addEventListener(type: "versionchange", listener: (ev: IDBVersionChangeEvent) => any, useCapture?: boolean): void;
     addEventListener<K extends keyof IDBDatabaseEventMap>(type: K, listener: (this: IDBDatabase, ev: IDBDatabaseEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<IDBDatabase>, useCapture?: boolean): void;
 }
 
 declare var IDBDatabase: {
@@ -587,10 +587,10 @@ interface IDBOpenDBRequestEventMap extends IDBRequestEventMap {
 }
 
 interface IDBOpenDBRequest extends IDBRequest {
-    onblocked: (this: IDBOpenDBRequest, ev: Event<this>) => any;
-    onupgradeneeded: (this: IDBOpenDBRequest, ev: IDBVersionChangeEvent<this>) => any;
+    onblocked: (this: IDBOpenDBRequest, ev: Event<IDBOpenDBRequest>) => any;
+    onupgradeneeded: (this: IDBOpenDBRequest, ev: IDBVersionChangeEvent<IDBOpenDBRequest>) => any;
     addEventListener<K extends keyof IDBOpenDBRequestEventMap>(type: K, listener: (this: IDBOpenDBRequest, ev: IDBOpenDBRequestEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<IDBOpenDBRequest>, useCapture?: boolean): void;
 }
 
 declare var IDBOpenDBRequest: {
@@ -605,14 +605,14 @@ interface IDBRequestEventMap {
 
 interface IDBRequest extends EventTarget {
     readonly error: DOMError;
-    onerror: (this: IDBRequest, ev: Event<this>) => any;
-    onsuccess: (this: IDBRequest, ev: Event<this>) => any;
+    onerror: (this: IDBRequest, ev: Event<IDBRequest>) => any;
+    onsuccess: (this: IDBRequest, ev: Event<IDBRequest>) => any;
     readonly readyState: string;
     readonly result: any;
     source: IDBObjectStore | IDBIndex | IDBCursor;
     readonly transaction: IDBTransaction;
     addEventListener<K extends keyof IDBRequestEventMap>(type: K, listener: (this: IDBRequest, ev: IDBRequestEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<IDBRequest>, useCapture?: boolean): void;
 }
 
 declare var IDBRequest: {
@@ -630,16 +630,16 @@ interface IDBTransaction extends EventTarget {
     readonly db: IDBDatabase;
     readonly error: DOMError;
     readonly mode: string;
-    onabort: (this: IDBTransaction, ev: Event<this>) => any;
-    oncomplete: (this: IDBTransaction, ev: Event<this>) => any;
-    onerror: (this: IDBTransaction, ev: Event<this>) => any;
+    onabort: (this: IDBTransaction, ev: Event<IDBTransaction>) => any;
+    oncomplete: (this: IDBTransaction, ev: Event<IDBTransaction>) => any;
+    onerror: (this: IDBTransaction, ev: Event<IDBTransaction>) => any;
     abort(): void;
     objectStore(name: string): IDBObjectStore;
     readonly READ_ONLY: string;
     readonly READ_WRITE: string;
     readonly VERSION_CHANGE: string;
     addEventListener<K extends keyof IDBTransactionEventMap>(type: K, listener: (this: IDBTransaction, ev: IDBTransactionEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<IDBTransaction>, useCapture?: boolean): void;
 }
 
 declare var IDBTransaction: {
@@ -700,12 +700,12 @@ interface MessagePortEventMap {
 }
 
 interface MessagePort extends EventTarget {
-    onmessage: (this: MessagePort, ev: MessageEvent<this>) => any;
+    onmessage: (this: MessagePort, ev: MessageEvent<MessagePort>) => any;
     close(): void;
     postMessage(message?: any, transfer?: any[]): void;
     start(): void;
     addEventListener<K extends keyof MessagePortEventMap>(type: K, listener: (this: MessagePort, ev: MessagePortEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<MessagePort>, useCapture?: boolean): void;
 }
 
 declare var MessagePort: {
@@ -725,16 +725,16 @@ interface Notification extends EventTarget {
     readonly dir: string;
     readonly icon: string;
     readonly lang: string;
-    onclick: (this: Notification, ev: Event<this>) => any;
-    onclose: (this: Notification, ev: Event<this>) => any;
-    onerror: (this: Notification, ev: Event<this>) => any;
-    onshow: (this: Notification, ev: Event<this>) => any;
+    onclick: (this: Notification, ev: Event<Notification>) => any;
+    onclose: (this: Notification, ev: Event<Notification>) => any;
+    onerror: (this: Notification, ev: Event<Notification>) => any;
+    onshow: (this: Notification, ev: Event<Notification>) => any;
     readonly permission: string;
     readonly tag: string;
     readonly title: string;
     close(): void;
     addEventListener<K extends keyof NotificationEventMap>(type: K, listener: (this: Notification, ev: NotificationEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<Notification>, useCapture?: boolean): void;
 }
 
 declare var Notification: {
@@ -954,12 +954,12 @@ interface ServiceWorkerEventMap extends AbstractWorkerEventMap {
 }
 
 interface ServiceWorker extends EventTarget, AbstractWorker<ServiceWorker> {
-    onstatechange: (this: ServiceWorker, ev: Event<this>) => any;
+    onstatechange: (this: ServiceWorker, ev: Event<ServiceWorker>) => any;
     readonly scriptURL: USVString;
     readonly state: string;
     postMessage(message: any, transfer?: any[]): void;
     addEventListener<K extends keyof ServiceWorkerEventMap>(type: K, listener: (this: ServiceWorker, ev: ServiceWorkerEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<ServiceWorker>, useCapture?: boolean): void;
 }
 
 declare var ServiceWorker: {
@@ -974,7 +974,7 @@ interface ServiceWorkerRegistrationEventMap {
 interface ServiceWorkerRegistration extends EventTarget {
     readonly active: ServiceWorker | null;
     readonly installing: ServiceWorker | null;
-    onupdatefound: (this: ServiceWorkerRegistration, ev: Event<this>) => any;
+    onupdatefound: (this: ServiceWorkerRegistration, ev: Event<ServiceWorkerRegistration>) => any;
     readonly pushManager: PushManager;
     readonly scope: USVString;
     readonly sync: SyncManager;
@@ -984,7 +984,7 @@ interface ServiceWorkerRegistration extends EventTarget {
     unregister(): Promise<boolean>;
     update(): Promise<void>;
     addEventListener<K extends keyof ServiceWorkerRegistrationEventMap>(type: K, listener: (this: ServiceWorkerRegistration, ev: ServiceWorkerRegistrationEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<ServiceWorkerRegistration>, useCapture?: boolean): void;
 }
 
 declare var ServiceWorkerRegistration: {
@@ -1054,10 +1054,10 @@ interface WebSocket extends EventTarget {
     binaryType: string;
     readonly bufferedAmount: number;
     readonly extensions: string;
-    onclose: (this: WebSocket, ev: CloseEvent<this>) => any;
-    onerror: (this: WebSocket, ev: Event<this>) => any;
-    onmessage: (this: WebSocket, ev: MessageEvent<this>) => any;
-    onopen: (this: WebSocket, ev: Event<this>) => any;
+    onclose: (this: WebSocket, ev: CloseEvent<WebSocket>) => any;
+    onerror: (this: WebSocket, ev: Event<WebSocket>) => any;
+    onmessage: (this: WebSocket, ev: MessageEvent<WebSocket>) => any;
+    onopen: (this: WebSocket, ev: Event<WebSocket>) => any;
     readonly protocol: string;
     readonly readyState: number;
     readonly url: string;
@@ -1068,7 +1068,7 @@ interface WebSocket extends EventTarget {
     readonly CONNECTING: number;
     readonly OPEN: number;
     addEventListener<K extends keyof WebSocketEventMap>(type: K, listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<WebSocket>, useCapture?: boolean): void;
 }
 
 declare var WebSocket: {
@@ -1085,11 +1085,11 @@ interface WorkerEventMap extends AbstractWorkerEventMap {
 }
 
 interface Worker extends EventTarget, AbstractWorker<Worker> {
-    onmessage: (this: Worker, ev: MessageEvent<this>) => any;
+    onmessage: (this: Worker, ev: MessageEvent<Worker>) => any;
     postMessage(message: any, transfer?: any[]): void;
     terminate(): void;
     addEventListener<K extends keyof WorkerEventMap>(type: K, listener: (this: Worker, ev: WorkerEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<Worker>, useCapture?: boolean): void;
 }
 
 declare var Worker: {
@@ -1102,7 +1102,7 @@ interface XMLHttpRequestEventMap extends XMLHttpRequestEventTargetEventMap {
 }
 
 interface XMLHttpRequest extends EventTarget, XMLHttpRequestEventTarget<XMLHttpRequest> {
-    onreadystatechange: (this: XMLHttpRequest, ev: Event<this>) => any;
+    onreadystatechange: (this: XMLHttpRequest, ev: Event<XMLHttpRequest>) => any;
     readonly readyState: number;
     readonly response: any;
     readonly responseText: string;
@@ -1130,7 +1130,7 @@ interface XMLHttpRequest extends EventTarget, XMLHttpRequestEventTarget<XMLHttpR
     readonly OPENED: number;
     readonly UNSENT: number;
     addEventListener<K extends keyof XMLHttpRequestEventMap>(type: K, listener: (this: XMLHttpRequest, ev: XMLHttpRequestEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<XMLHttpRequest>, useCapture?: boolean): void;
 }
 
 declare var XMLHttpRequest: {
@@ -1145,7 +1145,7 @@ declare var XMLHttpRequest: {
 
 interface XMLHttpRequestUpload extends EventTarget, XMLHttpRequestEventTarget<XMLHttpRequestUpload> {
     addEventListener<K extends keyof XMLHttpRequestEventTargetEventMap>(type: K, listener: (this: XMLHttpRequestUpload, ev: XMLHttpRequestEventTargetEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<XMLHttpRequestUpload>, useCapture?: boolean): void;
 }
 
 declare var XMLHttpRequestUpload: {
@@ -1279,11 +1279,11 @@ interface DedicatedWorkerGlobalScopeEventMap extends WorkerGlobalScopeEventMap {
 }
 
 interface DedicatedWorkerGlobalScope extends WorkerGlobalScope {
-    onmessage: (this: DedicatedWorkerGlobalScope, ev: MessageEvent<this>) => any;
+    onmessage: (this: DedicatedWorkerGlobalScope, ev: MessageEvent<DedicatedWorkerGlobalScope>) => any;
     close(): void;
     postMessage(message: any, transfer?: any[]): void;
     addEventListener<K extends keyof DedicatedWorkerGlobalScopeEventMap>(type: K, listener: (this: DedicatedWorkerGlobalScope, ev: DedicatedWorkerGlobalScopeEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<DedicatedWorkerGlobalScope>, useCapture?: boolean): void;
 }
 
 declare var DedicatedWorkerGlobalScope: {
@@ -1382,19 +1382,19 @@ interface ServiceWorkerGlobalScopeEventMap extends WorkerGlobalScopeEventMap {
 
 interface ServiceWorkerGlobalScope extends WorkerGlobalScope {
     readonly clients: Clients;
-    onactivate: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<this>) => any;
-    onfetch: (this: ServiceWorkerGlobalScope, ev: FetchEvent<this>) => any;
-    oninstall: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<this>) => any;
-    onmessage: (this: ServiceWorkerGlobalScope, ev: ExtendableMessageEvent<this>) => any;
-    onnotificationclick: (this: ServiceWorkerGlobalScope, ev: NotificationEvent<this>) => any;
-    onnotificationclose: (this: ServiceWorkerGlobalScope, ev: NotificationEvent<this>) => any;
-    onpush: (this: ServiceWorkerGlobalScope, ev: PushEvent<this>) => any;
-    onpushsubscriptionchange: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<this>) => any;
-    onsync: (this: ServiceWorkerGlobalScope, ev: SyncEvent<this>) => any;
+    onactivate: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<ServiceWorkerGlobalScope>) => any;
+    onfetch: (this: ServiceWorkerGlobalScope, ev: FetchEvent<ServiceWorkerGlobalScope>) => any;
+    oninstall: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<ServiceWorkerGlobalScope>) => any;
+    onmessage: (this: ServiceWorkerGlobalScope, ev: ExtendableMessageEvent<ServiceWorkerGlobalScope>) => any;
+    onnotificationclick: (this: ServiceWorkerGlobalScope, ev: NotificationEvent<ServiceWorkerGlobalScope>) => any;
+    onnotificationclose: (this: ServiceWorkerGlobalScope, ev: NotificationEvent<ServiceWorkerGlobalScope>) => any;
+    onpush: (this: ServiceWorkerGlobalScope, ev: PushEvent<ServiceWorkerGlobalScope>) => any;
+    onpushsubscriptionchange: (this: ServiceWorkerGlobalScope, ev: ExtendableEvent<ServiceWorkerGlobalScope>) => any;
+    onsync: (this: ServiceWorkerGlobalScope, ev: SyncEvent<ServiceWorkerGlobalScope>) => any;
     readonly registration: ServiceWorkerRegistration;
     skipWaiting(): Promise<void>;
     addEventListener<K extends keyof ServiceWorkerGlobalScopeEventMap>(type: K, listener: (this: ServiceWorkerGlobalScope, ev: ServiceWorkerGlobalScopeEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<ServiceWorkerGlobalScope>, useCapture?: boolean): void;
 }
 
 declare var ServiceWorkerGlobalScope: {
@@ -1432,12 +1432,12 @@ interface WorkerGlobalScope extends EventTarget, WorkerUtils, WindowConsole, Glo
     readonly caches: CacheStorage;
     readonly isSecureContext: boolean;
     readonly location: WorkerLocation;
-    onerror: (this: WorkerGlobalScope, ev: ErrorEvent<this>) => any;
+    onerror: (this: WorkerGlobalScope, ev: ErrorEvent<WorkerGlobalScope>) => any;
     readonly performance: Performance;
     readonly self: WorkerGlobalScope;
     msWriteProfilerMark(profilerMarkName: string): void;
     addEventListener<K extends keyof WorkerGlobalScopeEventMap>(type: K, listener: (this: WorkerGlobalScope, ev: WorkerGlobalScopeEventMap[K]) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject<this>, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject<WorkerGlobalScope>, useCapture?: boolean): void;
 }
 
 declare var WorkerGlobalScope: {
