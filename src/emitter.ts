@@ -586,8 +586,10 @@ export function emitWebIDl(webidl: Browser.WebIdl, flavor: Flavor) {
         emitComments(p, printLine);
 
         // Treat window.name specially because of https://github.com/Microsoft/TypeScript/issues/9850
-        if (p.name === "name" && i.name === "Window" && emitScope === EmitScope.All) {
-            printLine("declare const name: never;");
+        if ((p.name === "name" || p.name === "length") &&
+            i.name === "Window" && emitScope === EmitScope.All) {
+            //const type = p.name === "event" ? ;
+            printLine(`declare const ${p.name}: void;`);
         }
         else {
             let pType: string;
@@ -610,6 +612,9 @@ export function emitWebIDl(webidl: Browser.WebIdl, flavor: Flavor) {
             const requiredModifier = p.required === undefined || p.required === 1 ? "" : "?";
             pType = p.nullable ? makeNullable(pType) : pType;
             const readOnlyModifier = p["read-only"] === 1 && prefix === "" ? "readonly " : "";
+            if (p.name === "event" && i.name === "Window" && emitScope === EmitScope.All) {
+                prefix = "declare const ";
+            }
             printLine(`${prefix}${readOnlyModifier}${p.name}${requiredModifier}: ${pType};`);
         }
     }
