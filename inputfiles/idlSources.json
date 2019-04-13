@@ -21,6 +21,10 @@
         "title": "CSS Basic User Interface"
     },
     {
+        "url": "https://www.w3.org/TR/css-align-3/",
+        "title": "CSS Box Alignment"
+    },
+    {
         "url": "https://drafts.csswg.org/css-images-3/",
         "title": "CSS Images"
     },
