@@ -7,13 +7,21 @@
     },
     "mixins": {
         "mixin": {
+            "GlobalEventHandlers": {
+                "properties": {
+                    "property": {
+                        "onformdata": null,
+                        "onslowchange": null
+                    }
+                }
+            },            },
             "ElementContentEditable": {
                 "properties": {
                     "property": {
                         "enterKeyHint": null
                     }
                 }
-            },            },
+            },
             "XMLHttpRequestEventTarget": null,
             "WorkerUtils": {
                 "methods": {
