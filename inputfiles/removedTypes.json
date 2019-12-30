@@ -1,7 +1,6 @@
 {
     "callback-functions": {
         "callback-function": {
-            "CustomElementConstructor": null,
             "ErrorEventHandler": null,
             "Function": null
         }
@@ -14,12 +13,8 @@
                         "enterKeyHint": null
                     }
                 }
-            },
+            },            },
             "XMLHttpRequestEventTarget": null,
-            "WindowTimers": {
-                "methods": null,
-                "implements": null
-            },
             "WorkerUtils": {
                 "methods": {
                     "method": {
@@ -161,6 +156,7 @@
             },
             "ElementInternals": null,
             "FederatedCredential": null,
+            "FormDataEvent": null,
             "HTMLAreasCollection": null,
             "HTMLBodyElement": {
                 "properties": {
@@ -187,6 +183,13 @@
                     }
                 }
             },
+            "HTMLElement": {
+                "methods": {
+                    "method": {
+                        "attachInternals": null
+                    }
+                }
+            },
             "MessageEvent": {
                 "methods": {
                     "method": {
@@ -199,6 +202,13 @@
             "MSDSHEvent": null,
             "MSStreamReader": null,
             "PasswordCredential": null,
+            "ShadowRoot": {
+                "properties": {
+                    "property": {
+                        "onslotchange": null
+                    }
+                }
+            },
             "StorageEvent": {
                 "methods": {
                     "method": {
@@ -284,7 +294,8 @@
                     }
                 },
                 "implements": [
-                    "GlobalFetch"
+                    "GlobalFetch",
+                    "WindowTimers"
                 ]
             },
             "WorkerGlobalScope": {
