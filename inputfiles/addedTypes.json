@@ -45,7 +45,7 @@
                             "name": "caretRangeFromPoint",
                             "deprecated": 1,
                             "override-signatures": [
-                                "caretRangeFromPoint(x: number, y: number): Range"
+                                "caretRangeFromPoint(x: string, y: string): Range"
                             ]
                         },
                         "caretPositionFromPoint": {
