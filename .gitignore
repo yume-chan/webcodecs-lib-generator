@@ -278,7 +278,6 @@ __pycache__/
 # tools/**
 # !tools/packages.config
 
-generated/
 lib/
 inputfiles/browser.webidl.json
 .vscode/*
