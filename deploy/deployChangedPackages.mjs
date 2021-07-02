@@ -65,21 +65,20 @@ Assuming that this means we need to upload this package.`);
     // Publish via npm
     if (upload) {
       if (process.env.NODE_AUTH_TOKEN) {
-        // const publish = spawnSync("npm", ["publish", "--access", "public"], {
-        //   cwd: join(generatedDir, dirName),
-        //   stdio: "inherit",
-        // });
+        const publish = spawnSync("npm", ["publish", "--access", "public"], {
+          cwd: join(generatedDir, dirName),
+          stdio: "inherit",
+        });
 
-        // if (publish.status) {
-        //   console.log(publish.stdout?.toString());
-        //   console.log(publish.stderr?.toString());
-        //   process.exit(publish.status);
-        // } else {
-        //   console.log(publish.stdout?.toString());
+        if (publish.status) {
+          console.log(publish.stdout?.toString());
+          console.log(publish.stderr?.toString());
+          process.exit(publish.status);
+        } else {
+          console.log(publish.stdout?.toString());
 
-        //   await createRelease(`${pkgJSON.name}@${pkgJSON.version}`);
-        // }
-        console.log("tried to deploy")
+          await createRelease(`${pkgJSON.name}@${pkgJSON.version}`);
+        }
       } else {
         console.log(
           "Wanting to run: 'npm publish --access public' in " +
