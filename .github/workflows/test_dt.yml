@@ -1,0 +1,48 @@
+name: Test DT subset
+on: [push, pull_request]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "15.x"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install
+      - run: npm run build
+
+      - name: Setup
+        run: |
+          git config --global core.longpaths true
+          git clone https://github.com/microsoft/DefinitelyTyped-tools $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools --depth 1
+          pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
+          npm i
+          pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner
+          npm i
+          npm i typescript@next
+          node ../../node_modules/typescript/lib/tsc.js
+
+          echo "Nightly run: Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
+          node ./dist/index.js --clone $DT_SHA --localTypeScriptPath $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner/node_modules/typescript/lib --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>nightlyErrors.txt
+
+          echo "Branch run: Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
+          node ./dist/index.js --clone $DT_SHA --localTypeScriptPath $BUILD_SOURCESDIRECTORY/built/local --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>branchErrors.txt
+          branchRunResult=$?
+
+          echo
+          echo "=== Errors only in nightly ==="
+          diff --changed-group-format='%<' --unchanged-group-format='' nightlyErrors.txt branchErrors.txt | egrep -v '^(===|[12]>)'
+
+          echo
+          echo "=== Errors only in branch ==="
+          diff --changed-group-format='%>' --unchanged-group-format='' nightlyErrors.txt branchErrors.txt  | egrep -v '^(===|[12]>)'
+
+          exit $branchRunResult
+        env:
+          BUILD_SOURCESDIRECTORY: "/tmp/build"
+          SYSTEM_JOBPOSITIONINPHASE: "0"
+          SYSTEM_TOTALJOBSINPHASE: "6"
+      
