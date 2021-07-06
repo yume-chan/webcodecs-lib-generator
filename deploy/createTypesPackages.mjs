@@ -21,6 +21,7 @@ const packages = [
 
 import { join, dirname } from "path";
 import fs from "fs";
+import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 import semver from "semver";
 import pkg from "prettier";
@@ -94,10 +95,12 @@ async function updatePackageJSON(packagePath, pkg, gitSha) {
       Number(semverMarkers[2]) + 1
     }`;
 
-    if (semver.gt(version, bumpedVersion)) {
+    if (semver.gt(bumpedVersion, version)) {
       version = bumpedVersion;
     }
   } catch (error) {
+    console.error("Caught error in grabbing version for package");
+    console.error(error);
     // NOOP, this is for the first deploy, which will set it to 0.0.1
   }
 

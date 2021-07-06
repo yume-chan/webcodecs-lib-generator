@@ -33,26 +33,6 @@
                 "events": {
                     "event": [
                         {
-                            "name": "beforeinput",
-                            "type": "InputEvent"
-                        },
-                        {
-                            "name": "compositionstart",
-                            "type": "CompositionEvent"
-                        },
-                        {
-                            "name": "compositionupdate",
-                            "type": "CompositionEvent"
-                        },
-                        {
-                            "name": "compositionend",
-                            "type": "CompositionEvent"
-                        },
-                        {
-                            "name": "focusin",
-                            "type": "FocusEvent"
-                        },
-                        {
                             "name": "abort",
                             "type": "UIEvent"
                         },
@@ -199,6 +179,20 @@
                     ]
                 }
             },
+            "WebGLRenderingContextBase": {
+                "properties": {
+                    "property": {
+                        "canvas": {
+                            "exposed": "Window",
+
+                            // https://github.com/KhronosGroup/WebGL/pull/3296 will make these redundant
+                            "name": "canvas",
+                            "type": "HTMLCanvasElement",
+                            "readonly": true
+                        }
+                    }
+                }
+            },
             "WindowEventHandlers": {
                 "events": {
                     "event": [
@@ -248,14 +242,8 @@
     },
     "enums": {
         "enum": {
-            "ClientTypes": {
-                "name": "ClientTypes",
-                "value": [
-                    "window",
-                    "worker",
-                    "sharedworker",
-                    "all"
-                ]
+            "ClientType": {
+                "name": "ClientTypes"
             },
             "RTCStatsIceCandidatePairState": {
                 "value": [
@@ -644,7 +632,7 @@
                     }
                 }
             },
-            // This is used in the React d.ts files, and not including 
+            // This is used in the React d.ts files, and not including
             // it would force an update for anyone using React.
             "StyleMedia": {
                 "name": "StyleMedia",
@@ -1059,28 +1047,6 @@
                         "url": {
                             "name": "url",
                             "type": "DOMString",
-                            "required": 1
-                        }
-                    }
-                }
-            },
-            "MemoryDescriptor": {
-                "legacy-namespace": "WebAssembly",
-                "members": {
-                    "member": {
-                        "shared": {
-                            "name": "shared",
-                            "type": "boolean"
-                        }
-                    }
-                }
-            },
-            "ShadowRootInit": {
-                "members": {
-                    "member": {
-                        "delegatesFocus": {
-                            "name": "delegatesFocus",
-                            "type": "boolean",
                             "required": true
                         }
                     }
@@ -1094,6 +1060,16 @@
                         },
                         "keyCode": {
                             "deprecated": true
+                        }
+                    }
+                }
+            },
+            "MemoryDescriptor": {
+                "members": {
+                    "member": {
+                        "shared": {
+                            "name": "shared",
+                            "type": "boolean"
                         }
                     }
                 }
