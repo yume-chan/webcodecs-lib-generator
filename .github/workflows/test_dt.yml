@@ -19,18 +19,24 @@ jobs:
           git config --global core.longpaths true
           git clone https://github.com/microsoft/DefinitelyTyped-tools $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools --depth 1
           pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
+          echo '1'
           npm i
+          echo '2'
           pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner
           npm i
+          echo '3'
           npm i typescript@next
           node ../../node_modules/typescript/lib/tsc.js
+          echo '4'
 
           echo "Nightly run: Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
           node ./dist/index.js --clone $DT_SHA --localTypeScriptPath $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner/node_modules/typescript/lib --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>nightlyErrors.txt
+          echo '5'
 
           echo "Branch run: Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
           node ./dist/index.js --clone $DT_SHA --localTypeScriptPath $BUILD_SOURCESDIRECTORY/built/local --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>branchErrors.txt
           branchRunResult=$?
+          echo '6'
 
           echo
           echo "=== Errors only in nightly ==="
