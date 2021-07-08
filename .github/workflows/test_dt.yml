@@ -2,7 +2,7 @@ name: Test DT subset
 on: [push, pull_request]
 
 jobs:
-  deploy:
+  test_shard:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,6 +44,6 @@ jobs:
 
           exit $branchRunResult
         env:
-          SYSTEM_JOBPOSITIONINPHASE: ${{ matrix.node }}
+          SYSTEM_JOBPOSITIONINPHASE: ${{ matrix.job_position }}
           SYSTEM_TOTALJOBSINPHASE: "6"
       
