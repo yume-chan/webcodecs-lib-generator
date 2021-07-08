@@ -17,7 +17,9 @@ jobs:
       - name: Setup
         run: |
           git config --global core.longpaths true
-          git clone https://github.com/microsoft/DefinitelyTyped-tools $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools --depth 1
+          git clone https://github.com/microsoft/DefinitelyTyped-tools $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
+          git checkout update_ts
+
           pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
           echo '1'
           yarn install
