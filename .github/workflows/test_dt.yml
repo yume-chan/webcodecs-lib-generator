@@ -25,7 +25,8 @@ jobs:
           pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner
           yarn install
           echo '3'
-          npm i typescript@next
+
+          cp $GITHUB_WORKSPACE/generated/dom.generated.d.ts ../../node_modules/typescript/lib/lib.dom.d.ts
           node ../../node_modules/typescript/lib/tsc.js
           echo '4'
 
