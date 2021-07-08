@@ -41,7 +41,6 @@ jobs:
 
           exit $branchRunResult
         env:
-          BUILD_SOURCESDIRECTORY: "/tmp/build"
-          SYSTEM_JOBPOSITIONINPHASE: "0"
+          SYSTEM_JOBPOSITIONINPHASE: "1"
           SYSTEM_TOTALJOBSINPHASE: "6"
       
