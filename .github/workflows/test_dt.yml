@@ -27,6 +27,12 @@ jobs:
           echo '3'
 
           cp $GITHUB_WORKSPACE/generated/dom.generated.d.ts ../../node_modules/typescript/lib/lib.dom.d.ts
+          cp $GITHUB_WORKSPACE/generated/dom.iterable.generated.d.ts ../../node_modules/typescript/lib/lib.dom.iterable.d.ts
+          cp $GITHUB_WORKSPACE/generated/webworker.generated.d.ts ../../node_modules/typescript/lib/lib.webworker.d.ts
+          cp $GITHUB_WORKSPACE/generated/webworker.iterable.generated.d.ts ../../node_modules/typescript/lib/lib.webworker.iterable.d.ts
+
+          node ../../node_modules/typescript/lib/tsc.js -v
+
           node ../../node_modules/typescript/lib/tsc.js
           echo '4'
 
