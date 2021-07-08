@@ -16,35 +16,20 @@ jobs:
 
       - name: Setup
         run: |
-          git config --global core.longpaths true
-          git clone https://github.com/microsoft/DefinitelyTyped-tools $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
-          pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
-          git checkout update_ts
-          echo '1'
-          yarn install
-          echo '2'
-          pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner
-          yarn install
-          echo '3'
+          mkdir tester
+          cd tester
+          yarn init -y
+          yarn add typescript@next
+          yarn add @definitelytyped/dtslint-runner
+          
+          cp $GITHUB_WORKSPACE/generated/dom.generated.d.ts node_modules/typescript/lib/lib.dom.d.ts
+          cp $GITHUB_WORKSPACE/generated/dom.iterable.generated.d.ts node_modules/typescript/lib/lib.dom.iterable.d.ts
+          cp $GITHUB_WORKSPACE/generated/webworker.generated.d.ts node_modules/typescript/lib/lib.webworker.d.ts
+          cp $GITHUB_WORKSPACE/generated/webworker.iterable.generated.d.ts node_modules/typescript/lib/lib.webworker.iterable.d.ts
 
-          cp $GITHUB_WORKSPACE/generated/dom.generated.d.ts ../../node_modules/typescript/lib/lib.dom.d.ts
-          cp $GITHUB_WORKSPACE/generated/dom.iterable.generated.d.ts ../../node_modules/typescript/lib/lib.dom.iterable.d.ts
-          cp $GITHUB_WORKSPACE/generated/webworker.generated.d.ts ../../node_modules/typescript/lib/lib.webworker.d.ts
-          cp $GITHUB_WORKSPACE/generated/webworker.iterable.generated.d.ts ../../node_modules/typescript/lib/lib.webworker.iterable.d.ts
-
-          node ../../node_modules/typescript/lib/tsc.js -v
-
-          node ../../node_modules/typescript/lib/tsc.js
-          echo '4'
-
-          echo "Nightly run: Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
-          node ./dist/index.js --clone $DT_SHA --localTypeScriptPath $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner/node_modules/typescript/lib --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>nightlyErrors.txt
-          echo '5'
-
-          echo "Branch run: Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
-          node ./dist/index.js --clone $DT_SHA --localTypeScriptPath $BUILD_SOURCESDIRECTORY/built/local --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>branchErrors.txt
-          branchRunResult=$?
-          echo '6'
+          echo "Branch run - Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
+          yarn dtslint-runner --clone --localTypeScriptPath node_modules/typescript/lib --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>nightlyErrors.txt
+          branchRunResult=$
 
           echo
           echo "=== Errors only in nightly ==="
