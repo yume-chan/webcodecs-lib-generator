@@ -20,10 +20,10 @@ jobs:
           git clone https://github.com/microsoft/DefinitelyTyped-tools $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools --depth 1
           pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools
           echo '1'
-          npm i
+          yarn install
           echo '2'
           pushd $BUILD_SOURCESDIRECTORY/DefinitelyTyped-tools/packages/dtslint-runner
-          npm i
+          yarn install
           echo '3'
           npm i typescript@next
           node ../../node_modules/typescript/lib/tsc.js
