@@ -46,6 +46,7 @@ jobs:
           diff --changed-group-format='%>' --unchanged-group-format='' nightlyErrors.txt branchErrors.txt  | egrep -v '^(===|[12]>)'
 
           exit $branchRunResult
+        continue-on-error: true
         env:
           SYSTEM_JOBPOSITIONINPHASE: ${{ matrix.job_position }}
           SYSTEM_TOTALJOBSINPHASE: "6"
