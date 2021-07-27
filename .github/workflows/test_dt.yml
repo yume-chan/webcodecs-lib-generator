@@ -30,6 +30,9 @@ jobs:
           cp $GITHUB_WORKSPACE/generated/webworker.generated.d.ts node_modules/typescript/lib/lib.webworker.d.ts
           cp $GITHUB_WORKSPACE/generated/webworker.iterable.generated.d.ts node_modules/typescript/lib/lib.webworker.iterable.d.ts
 
+      - name: Tests
+        run: |
+          cd tester
           echo "Branch run - Shard $SYSTEM_JOBPOSITIONINPHASE of $SYSTEM_TOTALJOBSINPHASE"
           yarn dtslint-runner --clone --localTypeScriptPath node_modules/typescript/lib --selection all --expectOnly --shardId $SYSTEM_JOBPOSITIONINPHASE --shardCount $SYSTEM_TOTALJOBSINPHASE 2>nightlyErrors.txt
           branchRunResult=$
