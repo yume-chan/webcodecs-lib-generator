@@ -1,6 +1,14 @@
 {
     "mixins": {
         "mixin": {
+            "ChildNode": {
+                "name": "ChildNode",
+                "extends": "Node"
+            },
+            "ParentNode": {
+                "name": "ParentNode",
+                "extends": "Node"
+            },
             "Animatable": {
                 "name": "Animatable",
                 "methods": {
@@ -760,26 +768,8 @@
                 },
                 "properties": {
                     "property": {
-                        "parentNode": {
-                            "overrideType": "Node & ParentNode"
-                        },
                         "parentElement": {
                             "overrideType": "HTMLElement"
-                        },
-                        "childNodes": {
-                            "overrideType": "NodeListOf<ChildNode & Node>"
-                        },
-                        "firstChild": {
-                            "overrideType": "ChildNode & Node"
-                        },
-                        "lastChild": {
-                            "overrideType": "ChildNode & Node"
-                        },
-                        "nextSibling": {
-                            "overrideType": "ChildNode & Node"
-                        },
-                        "previousSibling": {
-                            "overrideType": "ChildNode & Node"
                         }
                     }
                 }
