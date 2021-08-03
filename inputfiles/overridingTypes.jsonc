@@ -768,8 +768,26 @@
                 },
                 "properties": {
                     "property": {
+                        "parentNode": {
+                            "overrideType": "ParentNode"
+                        },
                         "parentElement": {
                             "overrideType": "HTMLElement"
+                        },
+                        "childNodes": {
+                            "overrideType": "NodeListOf<ChildNode>"
+                        },
+                        "firstChild": {
+                            "overrideType": "ChildNode"
+                        },
+                        "lastChild": {
+                            "overrideType": "ChildNode"
+                        },
+                        "nextSibling": {
+                            "overrideType": "ChildNode"
+                        },
+                        "previousSibling": {
+                            "overrideType": "ChildNode"
                         }
                     }
                 }
