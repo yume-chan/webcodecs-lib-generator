@@ -17230,7 +17230,7 @@ interface Window extends EventTarget, AnimationFrameProvider, GlobalEventHandler
     readonly pageXOffset: number;
     /** @deprecated This is a legacy alias of `scrollY`. */
     readonly pageYOffset: number;
-    readonly parent: WindowProxy | null;
+    readonly parent: WindowProxy;
     /**
      * Returns true if the personal bar is visible; otherwise, returns false.
      */
@@ -18294,7 +18294,7 @@ declare var outerWidth: number;
 declare var pageXOffset: number;
 /** @deprecated This is a legacy alias of `scrollY`. */
 declare var pageYOffset: number;
-declare var parent: WindowProxy | null;
+declare var parent: WindowProxy;
 /**
  * Returns true if the personal bar is visible; otherwise, returns false.
  */

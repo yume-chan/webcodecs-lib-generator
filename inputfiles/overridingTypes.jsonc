@@ -499,6 +499,9 @@
                         },
                         "window": {
                             "overrideType": "Window & typeof globalThis"
+                        },
+                        "parent": {
+                            "nullable": false
                         }
                     }
                 },
