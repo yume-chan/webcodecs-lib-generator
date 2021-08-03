@@ -1796,6 +1796,15 @@
                         }
                     }
                 }
+            },
+            "Window": {
+                "properties": {
+                    "property": {
+                        "parent": {
+                            "comment" : "Refers to either the parent WindowProxy, or itself. If you create a child context, then remove the parent you could get null though."
+                        }
+                    }
+                }
             }
         }
     }
