@@ -10471,11 +10471,11 @@ interface Node extends EventTarget {
     /**
      * Returns the children.
      */
-    readonly childNodes: NodeList;
+    readonly childNodes: NodeListOf<ChildNode>;
     /**
      * Returns the first child.
      */
-    readonly firstChild: Node | null;
+    readonly firstChild: ChildNode | null;
     /**
      * Returns true if node is connected and false otherwise.
      */
@@ -10483,11 +10483,11 @@ interface Node extends EventTarget {
     /**
      * Returns the last child.
      */
-    readonly lastChild: Node | null;
+    readonly lastChild: ChildNode | null;
     /**
      * Returns the next sibling.
      */
-    readonly nextSibling: Node | null;
+    readonly nextSibling: ChildNode | null;
     /**
      * Returns a string appropriate for the type of node.
      */
@@ -10508,11 +10508,11 @@ interface Node extends EventTarget {
     /**
      * Returns the parent.
      */
-    readonly parentNode: Node | null;
+    readonly parentNode: ParentNode | null;
     /**
      * Returns the previous sibling.
      */
-    readonly previousSibling: Node | null;
+    readonly previousSibling: ChildNode | null;
     textContent: string | null;
     appendChild<T extends Node>(node: T): T;
     /**
