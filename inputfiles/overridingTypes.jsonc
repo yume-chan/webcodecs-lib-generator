@@ -2,11 +2,9 @@
     "mixins": {
         "mixin": {
             "ChildNode": {
-                "name": "ChildNode",
                 "extends": "Node"
             },
             "ParentNode": {
-                "name": "ParentNode",
                 "extends": "Node"
             },
             "Animatable": {
