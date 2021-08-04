@@ -1801,7 +1801,7 @@
                 "properties": {
                     "property": {
                         "parent": {
-                            "comment" : "Refers to either the parent WindowProxy, or itself. If you create a child context, then remove the parent you could get null though."
+                            "comment" : "Refers to either the parent WindowProxy, or itself. It can rarely be null e.g. for contentWindow of an iframe that is already removed from the parent."
                         }
                     }
                 }
