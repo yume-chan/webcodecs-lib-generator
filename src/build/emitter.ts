@@ -22,7 +22,7 @@ enum EmitScope {
 const tsKeywords = new Set(["default", "delete", "continue"]);
 const extendConflictsBaseTypes: Record<
   string,
-  { extendType: string[]; memberNames: Set<string> }
+  { extendType: string[]; memberNames: Set<string>; }
 > = {
   HTMLCollection: {
     extendType: ["HTMLFormControlsCollection"],
@@ -36,7 +36,7 @@ const namespacesAsInterfaces = ["console"];
 
 // Used to decide if a member should be emitted given its static property and
 // the intended scope level.
-function matchScope(scope: EmitScope, x: { static?: boolean }) {
+function matchScope(scope: EmitScope, x: { static?: boolean; }) {
   return (
     scope === EmitScope.All || (scope === EmitScope.StaticOnly) === !!x.static
   );
@@ -59,7 +59,7 @@ function createTextWriter(newLine: string) {
   let indent: number;
   let lineStart: boolean;
   /** print declarations conflicting with base interface to a side list to write them under a different name later */
-  let stack: { content: string; indent: number }[] = [];
+  let stack: { content: string; indent: number; }[] = [];
 
   function getIndentString(level: number) {
     return "    ".repeat(level);
@@ -406,19 +406,7 @@ export function emitWebIdl(
     if (baseTypeConversionMap.has(objDomType)) {
       return baseTypeConversionMap.get(objDomType)!;
     }
-    // Name of an interface / enum / dict. Just return itself
-    if (
-      allInterfacesMap[objDomType] ||
-      allLegacyWindowAliases.includes(objDomType) ||
-      allCallbackFunctionsMap[objDomType] ||
-      allDictionariesMap[objDomType] ||
-      allEnumsMap[objDomType]
-    )
-      return objDomType;
-    // Name of a type alias. Just return itself
-    if (allTypedefsMap[objDomType]) return objDomType;
-
-    throw new Error("Unknown DOM type: " + objDomType);
+    return objDomType;
   }
 
   function makeNullable(originalType: string) {
@@ -527,18 +515,15 @@ export function emitWebIdl(
       )
     ) {
       printer.printLine(
-        `getElementsByTagName<K extends keyof HTMLElementTagNameMap>(${
-          m.signature[0].param![0].name
+        `getElementsByTagName<K extends keyof HTMLElementTagNameMap>(${m.signature[0].param![0].name
         }: K): HTMLCollectionOf<HTMLElementTagNameMap[K]>;`
       );
       printer.printLine(
-        `getElementsByTagName<K extends keyof SVGElementTagNameMap>(${
-          m.signature[0].param![0].name
+        `getElementsByTagName<K extends keyof SVGElementTagNameMap>(${m.signature[0].param![0].name
         }: K): HTMLCollectionOf<SVGElementTagNameMap[K]>;`
       );
       printer.printLine(
-        `getElementsByTagName(${
-          m.signature[0].param![0].name
+        `getElementsByTagName(${m.signature[0].param![0].name
         }: string): HTMLCollectionOf<Element>;`
       );
     }
@@ -847,8 +832,8 @@ export function emitWebIdl(
       typeof entity.deprecated === "string"
         ? `@deprecated ${entity.deprecated}`
         : entity.deprecated
-        ? "@deprecated"
-        : null;
+          ? "@deprecated"
+          : null;
     if (deprecated) {
       comments.push(deprecated);
     }
@@ -1012,8 +997,8 @@ export function emitWebIdl(
       subtype.length > 1
         ? subtype[0]
         : i.iterator.kind === "iterable"
-        ? "number"
-        : value;
+          ? "number"
+          : value;
     const name = i.typeParameters
       ? `${i.name}<${i.typeParameters!.map((p) => p.name).join(", ")}>`
       : i.name;
@@ -1079,12 +1064,10 @@ export function emitWebIdl(
       optionsType: string
     ) {
       printer.printLine(
-        `${prefix}${addOrRemove}EventListener<K extends keyof ${
-          iParent.name
+        `${prefix}${addOrRemove}EventListener<K extends keyof ${iParent.name
         }EventMap>(type: K, listener: (this: ${nameWithForwardedTypes(
           i
-        )}, ev: ${
-          iParent.name
+        )}, ev: ${iParent.name
         }EventMap[K]) => any, options?: boolean | ${optionsType}): void;`
       );
     }
@@ -1465,7 +1448,7 @@ export function emitWebIdl(
     }
   }
 
-  function compareName(c1: { name: string }, c2: { name: string }) {
+  function compareName(c1: { name: string; }, c2: { name: string; }) {
     return c1.name < c2.name ? -1 : c1.name > c2.name ? 1 : 0;
   }
 
@@ -1487,10 +1470,10 @@ export function emitWebIdl(
     emitCallBackFunctions();
 
     if (global === "Window") {
-      emitHTMLElementTagNameMap();
-      emitHTMLElementDeprecatedTagNameMap();
-      emitSVGElementTagNameMap();
-      emitElementTagNameMap();
+      // emitHTMLElementTagNameMap();
+      // emitHTMLElementDeprecatedTagNameMap();
+      // emitSVGElementTagNameMap();
+      // emitElementTagNameMap();
       emitNamedConstructors();
     }
 
@@ -1594,8 +1577,8 @@ export function emitWebIdl(
         iterator.kind === "maplike"
           ? `Map<${subtypes[0]}, ${subtypes[1]}>`
           : iterator.kind === "setlike"
-          ? `Set<${subtypes[0]}>`
-          : undefined;
+            ? `Set<${subtypes[0]}>`
+            : undefined;
       if (!base) {
         return "";
       }
@@ -1634,14 +1617,14 @@ export function emitWebIdl(
     const sequenceTypedefs = !webidl.typedefs
       ? []
       : webidl.typedefs.typedef
-          .filter((typedef) => Array.isArray(typedef.type))
-          .map((typedef) => ({
-            ...typedef,
-            type: (typedef.type as Browser.Typed[]).filter(
-              (t) => t.type === "sequence"
-            ),
-          }))
-          .filter((typedef) => typedef.type.length);
+        .filter((typedef) => Array.isArray(typedef.type))
+        .map((typedef) => ({
+          ...typedef,
+          type: (typedef.type as Browser.Typed[]).filter(
+            (t) => t.type === "sequence"
+          ),
+        }))
+        .filter((typedef) => typedef.type.length);
     const sequenceTypedefMap = arrayToMap(
       sequenceTypedefs,
       (t) => t.name,

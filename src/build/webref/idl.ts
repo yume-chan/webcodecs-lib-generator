@@ -9,14 +9,16 @@ export async function getWebidls(): Promise<Map<string, string>> {
 
   const map = new Map<string, string>();
   for (const [key, file] of Object.entries(idl)) {
-    const text = await file.text();
-    map.set(key, text);
-  }
-  for (const [key, data] of Object.entries(css)) {
-    const properties = Object.keys(data.properties);
-    if (properties.length) {
-      addToStringMap(map, key, generateWebIdlFromCssProperties(properties));
+    if (key === 'webcodecs') {
+      const text = await file.text();
+      map.set(key, text);
     }
   }
+  // for (const [key, data] of Object.entries(css)) {
+  //   const properties = Object.keys(data.properties);
+  //   if (properties.length) {
+  //     addToStringMap(map, key, generateWebIdlFromCssProperties(properties));
+  //   }
+  // }
   return map;
 }

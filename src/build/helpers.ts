@@ -130,7 +130,7 @@ export function merge<T>(target: T, src: T, shallow?: boolean): T {
           }
         }
       } else {
-        target[k] = src[k];
+        // target[k] = src[k];
       }
     }
   }
@@ -154,7 +154,7 @@ function mergeNamedArrays<T extends { name: string }>(
     if (name && map[name]) {
       merge(map[name], e2);
     } else {
-      srcProp.push(e2);
+      // srcProp.push(e2);
     }
   }
 }

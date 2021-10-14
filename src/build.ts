@@ -177,7 +177,7 @@ async function emitDom() {
   let webidl: Browser.WebIdl = {};
 
   for (const w of widlStandardTypes) {
-    webidl = merge(webidl, w.browser, true);
+    webidl = w.browser;
   }
   for (const w of widlStandardTypes) {
     for (const partial of w.partialInterfaces) {
@@ -228,11 +228,11 @@ async function emitDom() {
   }
   webidl = merge(webidl, await getInterfaceElementMergeData());
 
-  webidl = merge(webidl, getDeprecationData(webidl));
-  webidl = merge(webidl, getRemovalData(webidl));
+  // webidl = merge(webidl, getDeprecationData(webidl));
+  // webidl = merge(webidl, getRemovalData(webidl));
   webidl = prune(webidl, removedItems);
   webidl = mergeApiDescriptions(webidl, documentationFromMDN);
-  webidl = merge(webidl, addedItems);
+  // webidl = merge(webidl, addedItems);
   webidl = merge(webidl, overriddenItems);
   webidl = merge(webidl, comments);
   webidl = mergeDeprecatedMessage(webidl, deprecatedInfo);
@@ -245,27 +245,27 @@ async function emitDom() {
 
   const knownTypes = await readInputJSON("knownTypes.json");
 
-  emitFlavor(webidl, new Set(knownTypes.Window), {
+  await emitFlavor(webidl, new Set(knownTypes.Window), {
     name: "dom",
     global: ["Window"],
     outputFolder,
   });
-  emitFlavor(webidl, new Set(knownTypes.Worker), {
+  await emitFlavor(webidl, new Set(knownTypes.Worker), {
     name: "webworker",
     global: ["Worker", "DedicatedWorker", "SharedWorker", "ServiceWorker"],
     outputFolder,
   });
-  emitFlavor(webidl, new Set(knownTypes.Worker), {
+  await emitFlavor(webidl, new Set(knownTypes.Worker), {
     name: "sharedworker",
     global: ["SharedWorker", "Worker"],
     outputFolder,
   });
-  emitFlavor(webidl, new Set(knownTypes.Worker), {
+  await emitFlavor(webidl, new Set(knownTypes.Worker), {
     name: "serviceworker",
     global: ["ServiceWorker", "Worker"],
     outputFolder,
   });
-  emitFlavor(webidl, new Set(knownTypes.Worklet), {
+  await emitFlavor(webidl, new Set(knownTypes.Worklet), {
     name: "audioworklet",
     global: ["AudioWorklet", "Worklet"],
     outputFolder,
