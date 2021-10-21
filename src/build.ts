@@ -226,16 +226,16 @@ async function emitDom() {
       }
     }
   }
-  webidl = merge(webidl, await getInterfaceElementMergeData());
+  // webidl = merge(webidl, await getInterfaceElementMergeData());
 
   // webidl = merge(webidl, getDeprecationData(webidl));
   // webidl = merge(webidl, getRemovalData(webidl));
-  webidl = prune(webidl, removedItems);
-  webidl = mergeApiDescriptions(webidl, documentationFromMDN);
-  // webidl = merge(webidl, addedItems);
+  // webidl = prune(webidl, removedItems);
+  // webidl = mergeApiDescriptions(webidl, documentationFromMDN);
+  webidl = merge(webidl, addedItems);
   webidl = merge(webidl, overriddenItems);
-  webidl = merge(webidl, comments);
-  webidl = mergeDeprecatedMessage(webidl, deprecatedInfo);
+  // webidl = merge(webidl, comments);
+  // webidl = mergeDeprecatedMessage(webidl, deprecatedInfo);
   for (const name in webidl.interfaces!.interface) {
     const i = webidl.interfaces!.interface[name];
     if (i.overrideExposed) {

@@ -1,0 +1,1099 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioDataCopyToOptions {
+  required [EnforceRange] unsigned long planeIndex;
+  [EnforceRange] unsigned long frameCount;
+  [EnforceRange] unsigned long frameOffset = 0;
+  AudioSampleFormat format;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioDataInit {
+  required AudioSampleFormat format;
+  required float sampleRate;
+  required [EnforceRange] unsigned long numberOfFrames;
+  required [EnforceRange] unsigned long numberOfChannels;
+  required [EnforceRange] long long timestamp;  // microseconds
+  required AllowSharedBufferSource data;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[RuntimeEnabled=WebCodecs]
+callback AudioDataOutputCallback = void(AudioData output);
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface AudioData {
+  [RaisesException] constructor(AudioDataInit init);
+
+  // Creates identical AudioData, which needs to be independently closed.
+  [RaisesException] AudioData clone();
+
+  void close();
+
+  [RaisesException] unsigned long allocationSize(AudioDataCopyToOptions options);
+  [RaisesException] void copyTo(AllowSharedBufferSource destination,
+                                AudioDataCopyToOptions options);
+
+  readonly attribute AudioSampleFormat format;
+  readonly attribute float sampleRate;
+  readonly attribute unsigned long numberOfFrames;
+  readonly attribute unsigned long numberOfChannels;
+  readonly attribute unsigned long long duration;
+  readonly attribute long long timestamp;  // microseconds
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// NOTE: Keep this strucutre in sync with CopyConfig() defined in
+// audio_decoder.cc.
+
+dictionary AudioDecoderConfig {
+  // TODO(chcunningham): reference spec registry.
+  required DOMString codec;
+
+  // Rate of samples per second. 44100, 48000, etc.
+  required [EnforceRange] unsigned long sampleRate;
+
+  // 1, 2, etc.
+  required [EnforceRange] unsigned long numberOfChannels;
+
+  // Optional byte data required to initialize audio decoders such as Vorbis
+  // codebooks.
+  AllowSharedBufferSource description;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioDecoderInit {
+  required AudioDataOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioDecoderSupport {
+  required boolean supported;
+  required AudioDecoderConfig config;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    SecureContext,
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
+] interface AudioDecoder {
+  // |init| includes an |output| callback for emitting AudioBuffers and an
+  // |error| callback for emitting decode errors. All errors are permanent;
+  // construct a new decoder to recover.
+  //
+  // TODO(sandersd): Consider adding a state or last error attribute.
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsAudioDecoder] constructor(AudioDecoderInit init);
+
+  // The number of pending decode requests. This does not include requests that
+  // have been sent to the underlying codec.
+  //
+  // Applications can minimize underflow by enqueueing decode requests until
+  // |decodeQueueSize| is greater than a constant.
+  readonly attribute long decodeQueueSize;
+
+  // Which state the decoder is in, indicating which methods can be called.
+  readonly attribute CodecState state;
+
+  // Set the stream configuration for future decode() requests.
+  //
+  // The next decode request must be for a keyframe.
+  //
+  // TODO(chcunningham): Move the keyframe rule into the bytestream registry.
+  [RaisesException] void configure(AudioDecoderConfig config);
+
+  // Request decoding of an input chunk.
+  //
+  // You must call configure() before calling decode() for the first time.
+  [RaisesException] void decode(EncodedAudioChunk chunk);
+
+  // Request output from all previous decode requests.
+  //
+  // Resolved after all output for earlier decode requests has been emitted.
+  //
+  // The next decode request must be for a keyframe.
+  //
+  // TODO(chcunningham): Consider relaxing the keyframe requirement.
+  // TODO(chcunningham): Indicate whether the flush() completed successfully or due
+  // to a reset.
+  [RaisesException] Promise<void> flush();
+
+  // Reset all codec state, including all pending requests.
+  //
+  // You must call configure() before submitting the next decode.
+  [RaisesException] void reset();
+
+  // Immediately shut down the decoder and free its resources. All pending
+  // decode requests are aborted.
+  //
+  // Not recoverable: make a new AudioDecoder if needed.
+  [RaisesException] void close();
+
+  // Call prior to configure() to determine whether config will be supported.
+  [CallWith=ScriptState, RaisesException]
+  static Promise<AudioDecoderSupport> isConfigSupported(AudioDecoderConfig config);
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// NOTE: Keep this structure in sync with CopyConfig() defined in
+// audio_encoder.cc.
+dictionary AudioEncoderConfig {
+  // TODO(chcunningham): reference spec registry.
+  required DOMString codec;
+
+  // Rate of samples per second. 44100, 48000, etc.
+  required [EnforceRange] unsigned long sampleRate;
+
+  // 1, 2, etc.
+  required [EnforceRange] unsigned short numberOfChannels;
+
+  [EnforceRange] unsigned long long bitrate;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioEncoderInit {
+  required EncodedAudioChunkOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary AudioEncoderSupport {
+  required boolean supported;
+  required AudioEncoderConfig config;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    SecureContext,
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
+] interface AudioEncoder {
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsAudioEncoder]
+    constructor(AudioEncoderInit init);
+
+    // The number of pending encode requests. This does not include requests
+    // that have been sent to the underlying codec.
+    readonly attribute long encodeQueueSize;
+
+    // Enqueues a control message to configure the audio encoder for encoding
+    // audio data as described by config.
+    [RaisesException]
+    void configure(AudioEncoderConfig config);
+
+    // Enqueues a request to encode data.
+    // Results of the encoding (EncodedAudioChunk) are returned via
+    // the output callback provided in configure().
+    [RaisesException]
+    void encode(AudioData data);
+
+    // Enqueues a request to produce outputs for all already encoded data.
+    // Resolved after emitting outputs for all previously encoded data.
+    [RaisesException]
+    Promise<void> flush();
+
+    // Discard all pending work and current encoder configuration.
+    //
+    // Output for earlier encoding requests will not be emitted.
+    // Requires configure() to be call to set configuration once again.
+    [RaisesException]
+    void reset();
+
+    // Enqueues a request to shut down the encoder and free its resources.
+    [RaisesException]
+    void close();
+
+    // Which state the encoder is in, indicating which methods can be called.
+    readonly attribute CodecState state;
+
+    // Call prior to configure() to determine whether config will be supported.
+    [CallWith=ScriptState, RaisesException]
+    static Promise<AudioEncoderSupport> isConfigSupported(AudioEncoderConfig config);
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum AudioSampleFormat {
+  "u8",
+  "s16",
+  "s32",
+  "f32",
+  "u8-planar",
+  "s16-planar",
+  "s32-planar",
+  "f32-planar",
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum AvcBitstreamFormat {
+  "annexb",
+  "avc",
+};
+
+dictionary AvcEncoderConfig {
+  AvcBitstreamFormat format = "avc";
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum CodecState {
+  "unconfigured",
+  "configured",
+  "closed"
+};
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary EncodedAudioChunkInit {
+  required EncodedAudioChunkType type;
+  required [EnforceRange] long long timestamp; // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+  required AllowSharedBufferSource data;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary EncodedAudioChunkMetadata {
+  AudioDecoderConfig decoderConfig;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[RuntimeEnabled=WebCodecs]
+callback EncodedAudioChunkOutputCallback =
+  void(EncodedAudioChunk output, EncodedAudioChunkMetadata metadata);
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum EncodedAudioChunkType {
+    "key",
+    "delta",
+};
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface EncodedAudioChunk {
+  constructor(EncodedAudioChunkInit init);
+  readonly attribute EncodedAudioChunkType type;
+  readonly attribute long long timestamp;  // microseconds
+  readonly attribute unsigned long byteLength;
+  readonly attribute unsigned long long? duration;
+  [RaisesException]
+  void copyTo(AllowSharedBufferSource destination);
+};
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary EncodedVideoChunkInit {
+  required EncodedVideoChunkType type;
+  required [EnforceRange] long long timestamp; // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+  required AllowSharedBufferSource data;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary EncodedVideoChunkMetadata {
+  VideoDecoderConfig decoderConfig;
+  [EnforceRange] unsigned long temporalLayerId;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// Handles a new encoded video chunk on the consumer side of the video encoder.
+callback EncodedVideoChunkOutputCallback =
+  void (EncodedVideoChunk chunk, EncodedVideoChunkMetadata metadata);
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum EncodedVideoChunkType {
+    "key",
+    "delta",
+};
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface EncodedVideoChunk {
+  constructor(EncodedVideoChunkInit init);
+  readonly attribute EncodedVideoChunkType type;
+  // TODO: Add frame dependency information
+  readonly attribute long long timestamp;  // microseconds
+  readonly attribute unsigned long long? duration;  // microseconds
+  readonly attribute unsigned long byteLength;
+
+  [RaisesException]
+  void copyTo(AllowSharedBufferSource destination);
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum HardwarePreference {
+  "no-preference",
+  "prefer-software",
+  "prefer-hardware",
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary ImageDecodeOptions {
+  // The index of the frame to decode.
+  [EnforceRange] unsigned long frameIndex = 0;
+
+  // When |completeFramesOnly| is set to false, partial progressive frames will
+  // be returned. When in this mode, decode() calls will resolve only once per
+  // new partial image at |frameIndex| until the frame is complete.
+  boolean completeFramesOnly = true;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary ImageDecodeResult {
+  // Actual decoded image; includes resolution information.
+  required VideoFrame image;
+
+  // Indicates if the decoded image is actually complete.
+  required boolean complete;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView or ReadableStream) ImageBufferSource;
+dictionary ImageDecoderInit {
+  required ImageBufferSource data;
+
+  // Mime type for |data|. Providing the wrong mime type will lead to a decoding
+  // failure.
+  required USVString type;
+
+  // Options used for setting up the decoder. See ImageBitmapOptions.
+  PremultiplyAlpha premultiplyAlpha = "default";
+  ColorSpaceConversion colorSpaceConversion = "default";
+
+  // Some image decoders support reduced resolution decoding. The desired size
+  // can optionally be provided to trigger this behavior.
+  [EnforceRange] unsigned long desiredWidth;
+  [EnforceRange] unsigned long desiredHeight;
+
+  // For multi-track images, indicates that the animation is preferred over any
+  // still images that are present. When unspecified the decoder will use hints
+  // from the data stream to make a decision.
+  boolean preferAnimation;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/dalecurtis/image-decoder-api/blob/master/explainer.md
+
+// An ImageDecoder decodes images.
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs,
+    SecureContext,
+    ImplementedAs=ImageDecoderExternal,
+    ActiveScriptWrappable
+] interface ImageDecoder {
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsImageDecoder] constructor(ImageDecoderInit init);
+
+  // Returns true if ImageDecoder supports decoding of the given mime type.
+  [CallWith=ScriptState]
+  static Promise<boolean> isTypeSupported(DOMString type);
+
+  // Decodes a frame using the given |options| or the first frame if no options
+  // are provided. If data is still being received, the promise won't be
+  // resolved or rejected until the given |options.frameIndex| is available,
+  // all data is received, or a decoding error occurs.
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
+
+  // Aborts all pending metadata and decode promises.
+  void reset();
+
+  // Immediately shut down the decoder and free its resources. All pending
+  // decode requests are aborted.
+  //
+  // Not recoverable: make a new ImageDecoder if needed.
+  void close();
+
+  // The mime type for the decoded image. This reflects the value provided
+  // during construction.
+  readonly attribute DOMString type;
+
+  // True if all available data has been received by the decoder. Always true
+  // when an ArrayBuffer is provided at construction. False for ReadableStream
+  // usage
+  readonly attribute boolean complete;
+
+  // Property-based promise for signaling that all data has been received.
+  [CallWith=ScriptState] readonly attribute Promise<void> completed;
+
+  // List of tracks available in this image.
+  //
+  // When decoding a ReadableStream the array will be empty until enough data to
+  // decode metadata has been received.
+  [SameObject] readonly attribute ImageTrackList tracks;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface ImageTrackList {
+  getter ImageTrack([EnforceRange] unsigned long index);
+  readonly attribute unsigned long length;
+
+  // Index of the currently selected track or -1 if no track is selected.
+  readonly attribute long selectedIndex;
+
+  // Helper accessor for the currently selected track.
+  readonly attribute ImageTrack? selectedTrack;
+
+  // Property-based promise for signaling initial metadata readiness (e.g.,
+  // track count, animation status, etc).
+  [CallWith=ScriptState] readonly attribute Promise<void> ready;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface ImageTrack {
+  // The number of frames in the image.
+  //
+  // When decoding a ReadableStream with a format that has no fixed count, the
+  // value will increase as frames are received by the decoder.
+  readonly attribute unsigned long frameCount;
+
+  // Indicates that this track has more than one frame.
+  readonly attribute boolean animated;
+
+  // The image's preferred repetition count. Zero means play through only once,
+  // a value of N means play N + 1 times. Infinity means play forever.
+  readonly attribute unrestricted float repetitionCount;
+
+  // Modify to choose this track in the image. Identical track selections will
+  // be ignored.
+  //
+  // Changing tracks will resolve all outstanding decode requests as rejected
+  // and reset any partially decoded frame state. Outstanding ImageDecodeResults
+  // and metadata decode promises will remain valid.
+  attribute boolean selected;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum LatencyMode {
+  "quality",
+  "realtime"
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary PlaneLayout {
+  // Offset into the buffer where this plane's first row begins.
+  required [EnforceRange] unsigned long offset;
+
+  // Distance (in bytes) between the start of each row of pixel data. Can be
+  // larger than size of the pixel data, eg. for alignment reasons.
+  required [EnforceRange] unsigned long stride;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoColorPrimaries {
+  "bt709",      // BT.709, sRGB
+  "bt470bg",    // BT.601 PAL
+  "smpte170m",  // BT.601 NTSC
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoColorSpaceInit {
+  VideoColorPrimaries primaries;
+  VideoTransferCharacteristics transfer;
+  VideoMatrixCoefficients matrix;
+  boolean fullRange;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface VideoColorSpace {
+  constructor(optional VideoColorSpaceInit init = {});
+
+  readonly attribute VideoColorPrimaries? primaries;
+  readonly attribute VideoTransferCharacteristics? transfer;
+  readonly attribute VideoMatrixCoefficients? matrix;
+  readonly attribute boolean? fullRange;
+
+  // Note: [Default] implementation would be correct.
+  VideoColorSpaceInit toJSON();
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// NOTE: Keep this strucutre in sync with CopyConfig() defined in
+// video_decoder.cc.
+
+dictionary VideoDecoderConfig {
+  // Codec string, eg. "avc1.42001e" or "vp09.00.10.08".
+  // TODO(sandersd): Should we accept "avc1" when |description| is provided?
+  required DOMString codec;
+
+  // avcC, vpcC, or etc.
+  // TODO(sandersd): Define what happens if the parsed description differs from
+  // the metadata below.
+  AllowSharedBufferSource description;
+
+  // Hint about the encoded size of the content.
+  [EnforceRange] unsigned long codedWidth;
+  [EnforceRange] unsigned long codedHeight;
+
+  // Display aspect ratio of the content.
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
+
+  // Hint about the color space of the content.
+  VideoColorSpaceInit colorSpace;
+
+  HardwarePreference hardwareAcceleration = "no-preference";
+
+  // Hint that decoders should be configured for latency versus throughput.
+  boolean optimizeForLatency;
+};
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoDecoderInit {
+  required VideoFrameOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoDecoderSupport {
+  required boolean supported;
+  required VideoDecoderConfig config;
+};
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// A VideoDecoder processes a queue of configure, decode, and flush requests.
+// Requests are taken from the queue sequentially but may be processed
+// concurrently.
+//
+// TODO(sandersd): Specify a tune() implementation for changing decoder
+// parameters (separate from stream parameters). This is more important for
+// encoders.
+[
+    Exposed=(Window,DedicatedWorker),
+    SecureContext,
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
+] interface VideoDecoder {
+  // |init| includes an |output| callback for emitting VideoFrames and an
+  // |error| callback for emitting decode errors.
+  //
+  // When in an closed state, all methods will fail.
+  //
+  // TODO(sandersd): Consider adding a state or last error attribute.
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoDecoder] constructor(VideoDecoderInit init);
+
+  // The number of pending decode requests. This does not include requests that
+  // have been sent to the underlying codec.
+  //
+  // Applications can minimize underflow by enqueueing decode requests until
+  // |decodeQueueSize| is greater than a constant.
+  //
+  // TODO(sandersd): Consider adding a predicted output count or other
+  // backpressure mechanism that considers the state of the underlying codec.
+  // TODO(sandersd): Consider emitting an event when this number decreases.
+  readonly attribute long decodeQueueSize;
+
+  // Which state the decoder is in, indicating which methods can be called.
+  readonly attribute CodecState state;
+
+  // Set the stream configuration for future decode() requests.
+  //
+  // The next decode request must be for a keyframe.
+  //
+  // TODO(sandersd): Move the keyframe rule into the bytestream registry.
+  [RaisesException] void configure(VideoDecoderConfig config);
+
+  // Request decoding of an input chunk.
+  //
+  // You must call configure() before calling decode() for the first time.
+  [RaisesException] void decode(EncodedVideoChunk chunk);
+
+  // Request output from all previous decode requests.
+  //
+  // Resolved after all output for earlier decode requests has been emitted.
+  //
+  // The next decode request must be for a keyframe.
+  //
+  // TODO(sandersd): Consider relaxing the keyframe requirement.
+  // TODO(sandersd): Indicate whether the flush() completed successfully or due
+  // to a reset.
+  [RaisesException] Promise<void> flush();
+
+  // Discard all pending decode requests.
+  //
+  // The next decode request must be for a keyframe.
+  //
+  // Note: It may be possible to call reset() after a flush() promise has been
+  // resolved but before it is fulfilled. In that case the flush() promise will
+  // be fulfilled successfully even though reset() was called.
+  [RaisesException] void reset();
+
+  // Immediately shut down the decoder and free its resources. All pending
+  // decode requests are aborted.
+  //
+  // Not recoverable: make a new VideoDecoder if needed.
+  [RaisesException] void close();
+
+  // Call prior to configure() to determine whether config will be supported.
+  [CallWith=ScriptState, RaisesException]
+  static Promise<VideoDecoderSupport> isConfigSupported(VideoDecoderConfig config);
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+// NOTE: Keep this structure in sync with CopyConfig() defined in
+// video_encoder.cc.
+dictionary VideoEncoderConfig {
+  required DOMString codec;
+  HardwarePreference hardwareAcceleration = "no-preference";
+  AlphaOption alpha = "discard";
+
+  [EnforceRange] unsigned long long bitrate;
+  BitrateMode bitrateMode = "variable";
+
+  double framerate;
+
+  required [EnforceRange] unsigned long width;
+  required [EnforceRange] unsigned long height;
+
+  // Hint about the pixel aspect ratio of the content.
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+
+  AvcEncoderConfig avc;
+
+  // Same as in WebRTC SVC (https://w3c.github.io/webrtc-svc/)
+  DOMString scalabilityMode;
+
+  LatencyMode latencyMode = "quality";
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoEncoderEncodeOptions {
+  boolean? keyFrame;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoEncoderInit {
+  // Called whenever there is a new encoded video chunk available.
+  required EncodedVideoChunkOutputCallback output;
+
+  // Called when there is a decoding error.
+  required WebCodecsErrorCallback error;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoEncoderSupport {
+  required boolean supported;
+  required VideoEncoderConfig config;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[
+    Exposed=(Window,DedicatedWorker),
+    SecureContext,
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
+] interface VideoEncoder {
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
+    constructor(VideoEncoderInit init);
+
+    // The number of pending encode requests. This does not include requests
+    // that have been sent to the underlying codec.
+    readonly attribute long encodeQueueSize;
+
+    // Enqueues a control message to configure the video encoder for encoding
+    // frames as described by config.
+    [RaisesException]
+    void configure(VideoEncoderConfig config);
+
+    // Enqueues a request to encode a frame.
+    // Results of the encoding (EncodedVideoChunk) are returned via
+    // the output callback provided in configure().
+    [RaisesException]
+    void encode(VideoFrame frame,
+                         optional VideoEncoderEncodeOptions options = {});
+
+
+    // Enqueues a request to produce outputs for all already encoded frames.
+    // Resolved after emitting outputs for all previously encoded frames.
+    [RaisesException]
+    Promise<void> flush();
+
+    // Discard all pending work and current encoder configuration.
+    //
+    // Output for earlier encoding requests will not be emitted.
+    // The next encoded frame will be a keyframe.
+    // Requires configure() to be call to set configuration once again.
+    [RaisesException]
+    void reset();
+
+    // Enqueues a request to shut down the encoder and free its resources.
+    [RaisesException]
+    void close();
+
+    // Which state the encoder is in, indicating which methods can be called.
+    readonly attribute CodecState state;
+
+    // Call prior to configure() to determine whether config will be supported.
+    [CallWith=ScriptState, RaisesException]
+    static Promise<VideoEncoderSupport> isConfigSupported(VideoEncoderConfig config);
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoFrameBufferInit {
+  required VideoPixelFormat format;
+
+  // Default layout is tightly-packed.
+  sequence<PlaneLayout> layout;
+
+  required [EnforceRange] long long timestamp;  // microseconds
+  [EnforceRange] unsigned long long duration;  // microseconds
+
+  required [EnforceRange] unsigned long codedWidth;
+  required [EnforceRange] unsigned long codedHeight;
+
+  DOMRectInit visibleRect;
+
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+
+  VideoColorSpaceInit colorSpace;
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoFrameCopyToOptions {
+  // The area to copy. If unspecified, the visible rect will be used. The coded
+  // rect can be specified by passing frame.codedRect.
+  DOMRectInit rect;
+
+  // The layout of each plane in the buffer. This allows the offset and stride
+  // of each plane to be specified. If unspecified, the planes will be tightly
+  // packed. It is invalid to specify planes that overlap.
+  sequence<PlaneLayout> layout;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum AlphaOption { "discard", "keep" };
+dictionary VideoFrameInit {
+  [EnforceRange] long long timestamp;  // microseconds
+  [EnforceRange] unsigned long long duration;   // microseconds
+  AlphaOption alpha = "keep";
+  DOMRectInit visibleRect;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[RuntimeEnabled=WebCodecs]
+callback VideoFrameOutputCallback = void(VideoFrame output);
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowSharedBufferSource;
+
+[
+    Exposed=(Window,DedicatedWorker),
+    Serializable,
+    RuntimeEnabled=WebCodecs
+] interface VideoFrame {
+  [CallWith=ScriptState, RaisesException]
+  constructor(CanvasImageSource source, optional VideoFrameInit init = {});
+
+  [CallWith=ScriptState, RaisesException]
+  constructor(AllowSharedBufferSource data, VideoFrameBufferInit init);
+
+  readonly attribute VideoPixelFormat? format;
+
+  // Presentation timestamp, in microseconds.
+  readonly attribute long long? timestamp;
+  // Presentation duration, in microseconds.
+  readonly attribute unsigned long long? duration;
+
+  // Dimensions of this frame's pixel data; typically padded to a macroblock
+  // multiple.
+  readonly attribute unsigned long codedWidth;
+  readonly attribute unsigned long codedHeight;
+
+  // Convenience accessor, origin is always (0, 0).
+  readonly attribute DOMRectReadOnly? codedRect;
+
+  // Area of this frame's pixel data that is not padding.
+  readonly attribute DOMRectReadOnly? visibleRect;
+
+  // Display aspect ratio of visible rect.
+  readonly attribute unsigned long displayWidth;
+  readonly attribute unsigned long displayHeight;
+
+  // Color space of the data produced by copyTo().
+  readonly attribute VideoColorSpace colorSpace;
+
+  // Returns the minimum size (in bytes) of a buffer that copyTo() could
+  // copy this frame into with the given options.
+  [RaisesException] unsigned long allocationSize(
+      optional VideoFrameCopyToOptions options = {});
+
+  // Copy the planes of this frame into |destination| according to |options|.
+  // The format of the data is the same as this frame's |format|.
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<PlaneLayout>> copyTo(
+      AllowSharedBufferSource destination,
+      optional VideoFrameCopyToOptions options = {});
+
+  // Creates a copy of this VideoFrame, which needs to be independently closed.
+  [RaisesException] VideoFrame clone();
+
+  void close();
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoMatrixCoefficients {
+  "rgb",        // sRGB
+  "bt709",      // BT.709
+  "bt470bg",    // BT.601 PAL
+  "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
+};
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoPixelFormat {
+    // 4:2:0 Y, U, V
+    "I420",
+
+    // 4:2:0 Y, U, V, A
+    "I420A",
+
+    // 4:2:2 Y, U, V
+    "I422",
+
+    // 4:4:4 Y, U, V
+    "I444",
+
+    // 4:2:0 Y, UV
+    "NV12",
+
+    // 32bpp RGBA
+    "RGBA",
+
+    // 32bpp RGBX (opaque)
+    "RGBX",
+
+    // 32bpp BGRA
+    "BGRA",
+
+    // 32bpp BGRX (opaque)
+    "BGRX",
+};
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoTransferCharacteristics {
+  "bt709",         // BT.709
+  "smpte170m",     // BT.601 (functionally the same as bt709)
+  "iec61966-2-1",  // sRGB
+};
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+[RuntimeEnabled=WebCodecs]
+callback WebCodecsErrorCallback = void(DOMException error);

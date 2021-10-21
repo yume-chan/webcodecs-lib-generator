@@ -10,7 +10,7 @@ interface AudioDataCopyToOptions {
 }
 
 interface AudioDataInit {
-    data: BufferSource;
+    data: AllowSharedBufferSource;
     format: AudioSampleFormat;
     numberOfChannels: number;
     numberOfFrames: number;
@@ -20,7 +20,7 @@ interface AudioDataInit {
 
 interface AudioDecoderConfig {
     codec: string;
-    description?: BufferSource;
+    description?: AllowSharedBufferSource;
     numberOfChannels: number;
     sampleRate: number;
 }
@@ -31,15 +31,15 @@ interface AudioDecoderInit {
 }
 
 interface AudioDecoderSupport {
-    config?: AudioDecoderConfig;
-    supported?: boolean;
+    config: AudioDecoderConfig;
+    supported: boolean;
 }
 
 interface AudioEncoderConfig {
     bitrate?: number;
     codec: string;
-    numberOfChannels?: number;
-    sampleRate?: number;
+    numberOfChannels: number;
+    sampleRate: number;
 }
 
 interface AudioEncoderInit {
@@ -48,12 +48,16 @@ interface AudioEncoderInit {
 }
 
 interface AudioEncoderSupport {
-    config?: AudioEncoderConfig;
-    supported?: boolean;
+    config: AudioEncoderConfig;
+    supported: boolean;
+}
+
+interface AvcEncoderConfig {
+    format?: AvcBitstreamFormat;
 }
 
 interface EncodedAudioChunkInit {
-    data: BufferSource;
+    data: AllowSharedBufferSource;
     duration?: number;
     timestamp: number;
     type: EncodedAudioChunkType;
@@ -64,16 +68,15 @@ interface EncodedAudioChunkMetadata {
 }
 
 interface EncodedVideoChunkInit {
-    data: BufferSource;
+    data: AllowSharedBufferSource;
     duration?: number;
     timestamp: number;
     type: EncodedVideoChunkType;
 }
 
 interface EncodedVideoChunkMetadata {
-    alphaSideData?: BufferSource;
     decoderConfig?: VideoDecoderConfig;
-    svc?: SvcOutputMetadata;
+    temporalLayerId?: number;
 }
 
 interface ImageDecodeOptions {
@@ -101,10 +104,6 @@ interface PlaneLayout {
     stride: number;
 }
 
-interface SvcOutputMetadata {
-    temporalLayerId?: number;
-}
-
 interface VideoColorSpaceInit {
     fullRange?: boolean;
     matrix?: VideoMatrixCoefficients;
@@ -117,10 +116,10 @@ interface VideoDecoderConfig {
     codedHeight?: number;
     codedWidth?: number;
     colorSpace?: VideoColorSpaceInit;
-    description?: BufferSource;
+    description?: AllowSharedBufferSource;
     displayAspectHeight?: number;
     displayAspectWidth?: number;
-    hardwareAcceleration?: HardwareAcceleration;
+    hardwareAcceleration?: HardwarePreference;
     optimizeForLatency?: boolean;
 }
 
@@ -130,19 +129,20 @@ interface VideoDecoderInit {
 }
 
 interface VideoDecoderSupport {
-    config?: VideoDecoderConfig;
-    supported?: boolean;
+    config: VideoDecoderConfig;
+    supported: boolean;
 }
 
 interface VideoEncoderConfig {
     alpha?: AlphaOption;
+    avc?: AvcEncoderConfig;
     bitrate?: number;
     bitrateMode?: BitrateMode;
     codec: string;
     displayHeight?: number;
     displayWidth?: number;
     framerate?: number;
-    hardwareAcceleration?: HardwareAcceleration;
+    hardwareAcceleration?: HardwarePreference;
     height: number;
     latencyMode?: LatencyMode;
     scalabilityMode?: string;
@@ -150,12 +150,17 @@ interface VideoEncoderConfig {
 }
 
 interface VideoEncoderEncodeOptions {
-    keyFrame?: boolean;
+    keyFrame?: boolean | null;
 }
 
 interface VideoEncoderInit {
     error: WebCodecsErrorCallback;
     output: EncodedVideoChunkOutputCallback;
+}
+
+interface VideoEncoderSupport {
+    config: VideoEncoderConfig;
+    supported: boolean;
 }
 
 interface VideoFrameBufferInit {
@@ -187,7 +192,7 @@ interface VideoFrameInit {
 
 interface AudioData {
     readonly duration: number;
-    readonly format: AudioSampleFormat | null;
+    readonly format: AudioSampleFormat;
     readonly numberOfChannels: number;
     readonly numberOfFrames: number;
     readonly sampleRate: number;
@@ -195,7 +200,7 @@ interface AudioData {
     allocationSize(options: AudioDataCopyToOptions): number;
     clone(): AudioData;
     close(): void;
-    copyTo(destination: BufferSource, options: AudioDataCopyToOptions): void;
+    copyTo(destination: AllowSharedBufferSource, options: AudioDataCopyToOptions): void;
 }
 
 declare var AudioData: {
@@ -242,7 +247,7 @@ interface EncodedAudioChunk {
     readonly duration: number | null;
     readonly timestamp: number;
     readonly type: EncodedAudioChunkType;
-    copyTo(destination: BufferSource): void;
+    copyTo(destination: AllowSharedBufferSource): void;
 }
 
 declare var EncodedAudioChunk: {
@@ -255,7 +260,7 @@ interface EncodedVideoChunk {
     readonly duration: number | null;
     readonly timestamp: number;
     readonly type: EncodedVideoChunkType;
-    copyTo(destination: BufferSource): void;
+    copyTo(destination: AllowSharedBufferSource): void;
 }
 
 declare var EncodedVideoChunk: {
@@ -266,8 +271,9 @@ declare var EncodedVideoChunk: {
 /** Available only in secure contexts. */
 interface ImageDecoder {
     readonly complete: boolean;
-    readonly completed: Promise<undefined>;
+    readonly completed: Promise<void>;
     readonly tracks: ImageTrackList;
+    readonly type: string;
     close(): void;
     decode(options?: ImageDecodeOptions): Promise<ImageDecodeResult>;
     reset(): void;
@@ -279,20 +285,11 @@ declare var ImageDecoder: {
     isTypeSupported(type: string): Promise<boolean>;
 };
 
-interface ImageTrackEventMap {
-    "change": Event;
-}
-
-interface ImageTrack extends EventTarget {
+interface ImageTrack {
     readonly animated: boolean;
     readonly frameCount: number;
-    onchange: ((this: ImageTrack, ev: Event) => any) | null;
     readonly repetitionCount: number;
     selected: boolean;
-    addEventListener<K extends keyof ImageTrackEventMap>(type: K, listener: (this: ImageTrack, ev: ImageTrackEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-    removeEventListener<K extends keyof ImageTrackEventMap>(type: K, listener: (this: ImageTrack, ev: ImageTrackEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-    removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare var ImageTrack: {
@@ -302,7 +299,7 @@ declare var ImageTrack: {
 
 interface ImageTrackList {
     readonly length: number;
-    readonly ready: Promise<undefined>;
+    readonly ready: Promise<void>;
     readonly selectedIndex: number;
     readonly selectedTrack: ImageTrack | null;
     [index: number]: ImageTrack;
@@ -357,7 +354,7 @@ interface VideoEncoder {
 declare var VideoEncoder: {
     prototype: VideoEncoder;
     new(init: VideoEncoderInit): VideoEncoder;
-    isConfigSupported(config: VideoEncoderConfig): Promise<boolean>;
+    isConfigSupported(config: VideoEncoderConfig): Promise<VideoEncoderSupport>;
 };
 
 interface VideoFrame {
@@ -374,13 +371,13 @@ interface VideoFrame {
     allocationSize(options?: VideoFrameCopyToOptions): number;
     clone(): VideoFrame;
     close(): void;
-    copyTo(destination: BufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
+    copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
 }
 
 declare var VideoFrame: {
     prototype: VideoFrame;
-    new(image: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
-    new(data: BufferSource, init: VideoFrameBufferInit): VideoFrame;
+    new(source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
+    new(data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
 };
 
 interface AudioDataOutputCallback {
@@ -388,11 +385,11 @@ interface AudioDataOutputCallback {
 }
 
 interface EncodedAudioChunkOutputCallback {
-    (output: EncodedAudioChunk, metadata?: EncodedAudioChunkMetadata): void;
+    (output: EncodedAudioChunk, metadata: EncodedAudioChunkMetadata): void;
 }
 
 interface EncodedVideoChunkOutputCallback {
-    (chunk: EncodedVideoChunk, metadata?: EncodedVideoChunkMetadata): void;
+    (chunk: EncodedVideoChunk, metadata: EncodedVideoChunkMetadata): void;
 }
 
 interface VideoFrameOutputCallback {
@@ -403,13 +400,16 @@ interface WebCodecsErrorCallback {
     (error: DOMException): void;
 }
 
-type ImageBufferSource = BufferSource | ReadableStream;
+type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
+type BitrateMode = "constant" | "variable";
+type ImageBufferSource = ArrayBuffer | ArrayBufferView | ReadableStream;
 type AlphaOption = "discard" | "keep";
 type AudioSampleFormat = "f32" | "f32-planar" | "s16" | "s16-planar" | "s32" | "s32-planar" | "u8" | "u8-planar";
+type AvcBitstreamFormat = "annexb" | "avc";
 type CodecState = "closed" | "configured" | "unconfigured";
 type EncodedAudioChunkType = "delta" | "key";
 type EncodedVideoChunkType = "delta" | "key";
-type HardwareAcceleration = "no-preference" | "prefer-hardware" | "prefer-software";
+type HardwarePreference = "no-preference" | "prefer-hardware" | "prefer-software";
 type LatencyMode = "quality" | "realtime";
 type VideoColorPrimaries = "bt470bg" | "bt709" | "smpte170m";
 type VideoMatrixCoefficients = "bt470bg" | "bt709" | "rgb" | "smpte170m";

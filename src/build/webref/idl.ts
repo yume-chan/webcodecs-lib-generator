@@ -1,7 +1,8 @@
-import { listAll as listAllIdl } from "@webref/idl";
 import { listAll as listAllCss } from "@webref/css";
-import { generateWebIdlFromCssProperties } from "./css.js";
-import { addToStringMap } from "../utils/map.js";
+import { listAll as listAllIdl } from "@webref/idl";
+import fs from 'fs/promises';
+import path from 'path';
+import url from 'url';
 
 export async function getWebidls(): Promise<Map<string, string>> {
   const idl = await listAllIdl();
@@ -10,7 +11,7 @@ export async function getWebidls(): Promise<Map<string, string>> {
   const map = new Map<string, string>();
   for (const [key, file] of Object.entries(idl)) {
     if (key === 'webcodecs') {
-      const text = await file.text();
+      const text = await fs.readFile(path.resolve(url.fileURLToPath(import.meta.url), '..', '..', '..', '..', 'inputfiles', 'webcodecs.idl'), 'utf8');
       map.set(key, text);
     }
   }
