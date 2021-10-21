@@ -17,6 +17,6 @@ So:
 
 However, `webcodecs.idl` from `@w3c/webref` is too loose for real-world use.
 
-So it's currently still using IDLs from Chromium source code (commit 56e541c3d1999b0465a7fcdbdd76f8f9931df097).
+So it's currently still using IDLs from Chromium source code (version 95.0.4638.60).
 
 See https://github.com/dogben/TypeScript-WebCodecs-generator/blob/master/README.md
